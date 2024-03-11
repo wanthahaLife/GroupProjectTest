@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IMovable
+public interface IMagnetic : IMovable
 {
-    void Movement();
+    void OnStick();
+
+    void Detach();
 }

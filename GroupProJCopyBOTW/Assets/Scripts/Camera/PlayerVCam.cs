@@ -1,4 +1,5 @@
 using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class PlayerVCam : MonoBehaviour
     /// <summary>
     /// 회전 속도
     /// </summary>
-    public float rotateSpeed = 0.5f;
+    public float rotateSpeed = 2.0f;
     public float cameraSpeed = 10.0f;
     public float maxAngle = 30.0f;
     public Vector3 skillCameraOffset = new Vector3(-2.0f, 1.5f, 0.0f);
@@ -21,21 +22,19 @@ public class PlayerVCam : MonoBehaviour
 
     bool useSkill = false;
 
-    Vector3 startOffset = Vector3.zero;
-
     CinemachineVirtualCamera vCam;
     Vector2 currMousePos;
     Vector2 preMousePos;
     Transform cameraRoot;
     Cinemachine3rdPersonFollow personFollow;
 
+    readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
     private void Awake()
     {
         vCam = GetComponent<CinemachineVirtualCamera>();
         currMousePos = Mouse.current.position.value;
         preMousePos = currMousePos;
-        startOffset = vCam.transform.position;
     }
 
     private void Start()
@@ -45,6 +44,8 @@ public class PlayerVCam : MonoBehaviour
         {
             cameraRoot = player.transform.GetChild(0);
             vCam.Follow = cameraRoot;
+            player.onSkill += OnSkillCamera;
+            player.inactivatedSkill += OriginCamera;
         }
         else
         {
@@ -59,13 +60,14 @@ public class PlayerVCam : MonoBehaviour
     {
         preMousePos = currMousePos;
         currMousePos = Mouse.current.position.value;
-        Vector2 dir = preMousePos - currMousePos;
+        Vector2 dir = currMousePos - preMousePos;
         dir = dir.normalized;
         angleY += dir.x * rotateSpeed;
-        angleX += dir.y * rotateSpeed;
+        angleX -= dir.y * rotateSpeed;
         angleX = Mathf.Clamp(angleX, -maxAngle, maxAngle);
 
-        cameraRoot.rotation = Quaternion.Euler(angleX, angleY, 0);
+        Quaternion rotate = Quaternion.Euler(angleX, angleY, 0);
+        cameraRoot.rotation = rotate;
     }
 
     private void Update()
@@ -96,6 +98,13 @@ public class PlayerVCam : MonoBehaviour
     void OriginCamera()
     {
         useSkill = false;
+    }
+
+    public Vector3 GetWorldPositionCenter()
+    {
+        Vector3 screenPoint = Camera.main.ViewportToScreenPoint(Center);
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPoint);
+        return worldPosition;
     }
 
 #if UNITY_EDITOR

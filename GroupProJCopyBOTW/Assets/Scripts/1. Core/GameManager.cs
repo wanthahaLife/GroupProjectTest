@@ -15,8 +15,22 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    PlayerVCam playerVCam;
+    public PlayerVCam PlayerVCam
+    {
+        get
+        {
+            if(playerVCam == null)
+            {
+                playerVCam = FindAnyObjectByType<PlayerVCam>();
+            }
+            return playerVCam;
+        }
+    }
+
     protected override void OnInitialize()
     {
         player = FindAnyObjectByType<Player>();
+        playerVCam = FindAnyObjectByType<PlayerVCam>();
     }
 }

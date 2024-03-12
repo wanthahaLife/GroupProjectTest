@@ -8,6 +8,6 @@ public class Test02_MagnetCatch : TestBase
     public MagnetCatch magnet;
     protected override void OnTest1(InputAction.CallbackContext context)
     {
-        magnet.OnSkill();
+        GameManager.Instance.Player.onSkill?.Invoke();
     }
 }

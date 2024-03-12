@@ -10,8 +10,8 @@ public class PlayerVCam : MonoBehaviour
     /// <summary>
     /// 회전 속도
     /// </summary>
-    public float rotateSpeed = 2.0f;
-    public float cameraSpeed = 10.0f;
+    public float rotateAngle = 2.0f;
+    public float skillCameraSpeed = 10.0f;
     public float maxAngle = 30.0f;
     public Vector3 skillCameraOffset = new Vector3(-2.0f, 1.5f, 0.0f);
 
@@ -42,10 +42,12 @@ public class PlayerVCam : MonoBehaviour
         Player player = GameManager.Instance.Player;
         if(player != null )
         {
-            cameraRoot = player.transform.GetChild(0);
+            cameraRoot = player.transform.GetChild(1);
             vCam.Follow = cameraRoot;
             player.onSkill += OnSkillCamera;
+            player.activatedSkill += OriginCamera;
             player.inactivatedSkill += OriginCamera;
+            onCameraRotate += player.RotatePlayer;
         }
         else
         {
@@ -56,18 +58,24 @@ public class PlayerVCam : MonoBehaviour
         originCameraOffset = personFollow.ShoulderOffset;
     }
 
+    public Action<Quaternion> onCameraRotate;
+    public Action<Vector3> onCameraMove;
+
     private void LateUpdate()
     {
         preMousePos = currMousePos;
         currMousePos = Mouse.current.position.value;
         Vector2 dir = currMousePos - preMousePos;
         dir = dir.normalized;
-        angleY += dir.x * rotateSpeed;
-        angleX -= dir.y * rotateSpeed;
+        angleY += dir.x * Time.deltaTime * rotateAngle;
+        angleX -= dir.y * Time.deltaTime * rotateAngle;
         angleX = Mathf.Clamp(angleX, -maxAngle, maxAngle);
+
 
         Quaternion rotate = Quaternion.Euler(angleX, angleY, 0);
         cameraRoot.rotation = rotate;
+
+        onCameraRotate?.Invoke(rotate);
     }
 
     private void Update()
@@ -77,7 +85,7 @@ public class PlayerVCam : MonoBehaviour
             Vector3 offset = skillCameraOffset - personFollow.ShoulderOffset;
             if ((offset).sqrMagnitude > 0.01f)
             {
-                personFollow.ShoulderOffset += cameraSpeed * Time.deltaTime * offset.normalized;
+                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
             }
         }
         else
@@ -85,7 +93,7 @@ public class PlayerVCam : MonoBehaviour
             Vector3 offset = originCameraOffset - personFollow.ShoulderOffset;
             if ((offset).sqrMagnitude > 0.01f)
             {
-                personFollow.ShoulderOffset += cameraSpeed * Time.deltaTime * offset.normalized;
+                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class MagnetCatch : MonoBehaviour, ISkill
 {
@@ -12,11 +13,12 @@ public class MagnetCatch : MonoBehaviour, ISkill
 
     bool IsMagnetic => target != null;
     bool activatedSkill = false;
-    Vector3 targetDistance = Vector3.zero;
 
     IMagnetic target;
     Transform targetTransform;
-    Vector3 targetDir = Vector3.zero;
+    Transform targetOriginParent;
+    Rigidbody targetRigid;
+    Vector3 targetOffset;
 
     Player player;
     PlayerVCam playerVCam;
@@ -35,40 +37,55 @@ public class MagnetCatch : MonoBehaviour, ISkill
         playerVCam = GameManager.Instance.PlayerVCam;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (activatedSkill)
+        if(activatedSkill)
         {
-            targetDir = Camera.main.transform.position + targetDistance;
-            Debug.Log(targetDir);
-            targetTransform.position = targetDir;
+            //targetTransform.localPosition = targetOffset;
+            //Debug.Log(targetTransform.parent.TransformDirection(targetTransform.localPosition) + " " + targetOffset);
+            //Vector3 localPos = targetTransform.parent.InverseTransformDirection(targetTransform.position);
+            targetRigid.MovePosition(targetTransform.parent.position + targetOffset);  // targetTransform.parent.position + 
         }
     }
+
 
     public void OnSkill()
     {
         Ray ray = Camera.main.ViewportPointToRay(Center);
         Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
-
         targetTransform = hit.transform;
-        if(targetTransform != null) 
-            target = targetTransform.GetComponent<IMagnetic>();
-        if (IsMagnetic)
+        if (targetTransform != null)
         {
-            targetDir = targetTransform.position;
-            targetDistance = targetTransform.position - Camera.main.transform.position;
+            target = targetTransform.GetComponent<IMagnetic>();
+            if (IsMagnetic)
+            {
+                               
+            }
         }
     }
 
     void Attach()
     {
-        activatedSkill = IsMagnetic;
+        if (IsMagnetic)
+        {
+            targetOriginParent = targetTransform.parent;
+            targetTransform.parent = player.transform.GetChild(1);
+            targetOffset = targetTransform.localPosition;
+            targetRigid = targetTransform.GetComponent<Rigidbody>();
+            target.Attach();
+            activatedSkill = true;
+        }
     }
 
     void Detach()
     {
-        target = null;
-        activatedSkill = false;
+        if (activatedSkill)
+        {
+            target.Detach();
+            target = null;
+            activatedSkill = false;
+            targetTransform.parent = targetOriginParent;
+        }
     }
 
 #if UNITY_EDITOR
@@ -84,8 +101,6 @@ public class MagnetCatch : MonoBehaviour, ISkill
 
         Ray ray = Camera.main.ViewportPointToRay(Center);
         Gizmos.DrawRay(ray);
-
-        Gizmos.DrawSphere(targetDir, 0.5f);
     }
 
 #endif

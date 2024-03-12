@@ -19,6 +19,14 @@ public class TestObject : MonoBehaviour, IMagnetic, IDestructible
     {
     }
 
+
+
+    private void OnCollisionExit(Collision collision)
+    {
+        rigid.velocity = Vector3.zero;
+        rigid.rotation = Quaternion.identity;
+    }
+
     public void Attach()
     {
         rigid.useGravity = false;

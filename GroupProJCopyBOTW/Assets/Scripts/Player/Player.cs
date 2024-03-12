@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class Player : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour
 
     PlayerInputActions inputActions;
     Vector3 inputDir = Vector3.zero;
+    Transform character;
 
     public Action onSkill;
     public Action activatedSkill;
@@ -20,6 +22,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         inputActions = new PlayerInputActions();
+        character = transform.GetChild(0);
     }
 
     private void OnEnable()
@@ -60,11 +63,18 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        transform.position = transform.position + Time.deltaTime * moveSpeed * inputDir;
+        transform.Translate(Time.deltaTime * moveSpeed * inputDir);
         if (inputDir.sqrMagnitude > 0.001f)
         {
-            Quaternion rotate = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(inputDir), rotateSpeed * Time.deltaTime);
-            transform.rotation = rotate;
+            character.rotation = Quaternion.Slerp(character.rotation, Quaternion.LookRotation(inputDir) * transform.rotation, rotateSpeed * Time.deltaTime);
+            //character.rotation = Quaternion.LookRotation(inputDir) * transform.rotation;
         }
+    }
+
+    public void RotatePlayer(Quaternion rotate)
+    {
+        rotate.x = 0;
+        rotate.z = 0;
+        transform.rotation = rotate;
     }
 }

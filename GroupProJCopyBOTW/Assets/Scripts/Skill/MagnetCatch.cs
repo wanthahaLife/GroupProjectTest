@@ -12,6 +12,7 @@ public class MagnetCatch : MonoBehaviour, ISkill
 
     bool IsMagnetic => target != null;
     bool activatedSkill = false;
+    Vector3 targetDistance = Vector3.zero;
 
     IMagnetic target;
     Transform targetTransform;
@@ -38,9 +39,9 @@ public class MagnetCatch : MonoBehaviour, ISkill
     {
         if (activatedSkill)
         {
+            targetDir = Camera.main.transform.position + targetDistance;
             Debug.Log(targetDir);
-            targetDir = playerVCam.GetWorldPositionCenter();
-            targetTransform.position =Vector3.Slerp(targetTransform.position, targetDir, targetSpeed * Time.deltaTime);
+            targetTransform.position = targetDir;
         }
     }
 
@@ -54,7 +55,8 @@ public class MagnetCatch : MonoBehaviour, ISkill
             target = targetTransform.GetComponent<IMagnetic>();
         if (IsMagnetic)
         {
-            targetDir = transform.position;
+            targetDir = targetTransform.position;
+            targetDistance = targetTransform.position - Camera.main.transform.position;
         }
     }
 
@@ -72,8 +74,18 @@ public class MagnetCatch : MonoBehaviour, ISkill
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        //Gizmos.DrawSphere()
+        Gizmos.color = Color.blue;
+        Vector3 vec = Vector3.zero;
+        if (playerVCam != null)
+        {
+            vec = playerVCam.GetWorldPositionCenter();
+        }
+        Gizmos.DrawSphere(vec, 0.5f);
+
+        Ray ray = Camera.main.ViewportPointToRay(Center);
+        Gizmos.DrawRay(ray);
+
+        Gizmos.DrawSphere(targetDir, 0.5f);
     }
 
 #endif

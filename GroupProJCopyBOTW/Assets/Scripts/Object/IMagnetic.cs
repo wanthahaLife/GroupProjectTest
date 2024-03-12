@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IMagnetic : IMovable
 {
-    void OnStick();
+    void Attach();
 
     void Detach();
 }

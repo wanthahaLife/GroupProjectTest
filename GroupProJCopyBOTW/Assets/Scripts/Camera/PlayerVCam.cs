@@ -75,7 +75,7 @@ public class PlayerVCam : MonoBehaviour
         if (useSkill)
         {
             Vector3 offset = skillCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.001f)
+            if ((offset).sqrMagnitude > 0.01f)
             {
                 personFollow.ShoulderOffset += cameraSpeed * Time.deltaTime * offset.normalized;
             }
@@ -83,7 +83,7 @@ public class PlayerVCam : MonoBehaviour
         else
         {
             Vector3 offset = originCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.001f)
+            if ((offset).sqrMagnitude > 0.01f)
             {
                 personFollow.ShoulderOffset += cameraSpeed * Time.deltaTime * offset.normalized;
             }

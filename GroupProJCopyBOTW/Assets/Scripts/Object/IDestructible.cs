@@ -4,5 +4,5 @@ using UnityEngine;
 
 interface IDestructible
 {
-    void Destory();
+    void DestoryObject();
 }

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IMovable
 {
-    void Movement();
+    void MoveForce(Vector3 force);
 }

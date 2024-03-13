@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestObject : MonoBehaviour, IMagnetic, IDestructible
+public class SkillReactionObj_MagDes : MonoBehaviour, IMagnetic, IDestructible
 {
     Rigidbody rigid;
 
@@ -10,16 +10,15 @@ public class TestObject : MonoBehaviour, IMagnetic, IDestructible
     {
         rigid = GetComponent<Rigidbody>();
     }
-    public void Destory()
+    public void DestoryObject()
     {
+        Destroy(gameObject);
     }
 
 
     public void Movement()
     {
     }
-
-
 
     private void OnCollisionExit(Collision collision)
     {

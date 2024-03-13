@@ -16,6 +16,9 @@ public class Player : MonoBehaviour
     Transform character;
     Animator animator;
 
+    PlayerSkillController skillController;
+    public PlayerSkillController SkillController => skillController;
+
     public Action onSkill;
     public Action activatedSkill;
     public Action inactivatedSkill;
@@ -27,6 +30,7 @@ public class Player : MonoBehaviour
         inputActions = new PlayerInputActions();
         character = transform.GetChild(0);
         animator = character.GetComponent<Animator>();
+        skillController = transform.GetComponent<PlayerSkillController>();
     }
 
     private void OnEnable()

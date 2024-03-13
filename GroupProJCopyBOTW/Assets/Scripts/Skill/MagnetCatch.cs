@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEditor;
 #endif
 
-public class MagnetCatch : MonoBehaviour, ISkill
+public class MagnetCatch : Skill
 {
     public float magnetDistance;
     public float playerRotateSpeed = 2.0f;
@@ -27,7 +27,7 @@ public class MagnetCatch : MonoBehaviour, ISkill
     Vector3 targetStartLocalPosition;
     Vector3 hitPoint;
 
-    Player player;
+    //Player player;
     PlayerVCam playerVCam;
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
@@ -42,9 +42,9 @@ public class MagnetCatch : MonoBehaviour, ISkill
         player = GameManager.Instance.Player;
         if(player != null)
         {
-            player.onSkill += OnSkill;
-            player.activatedSkill += Attach;
-            player.inactivatedSkill += Detach;
+            player.onSkill += UseSkill;
+            player.activatedSkill += StartSkill;
+            player.inactivatedSkill += EndSkill;
         }
         playerVCam = GameManager.Instance.PlayerVCam;
     }
@@ -66,7 +66,7 @@ public class MagnetCatch : MonoBehaviour, ISkill
     }
 
 
-    public void OnSkill()
+    protected override void UseSkill()
     {
         Ray ray = Camera.main.ViewportPointToRay(Center);
         Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
@@ -81,7 +81,7 @@ public class MagnetCatch : MonoBehaviour, ISkill
         }
     }
 
-    void Attach()
+    protected override void StartSkill()
     {
         if (IsMagnetic && !activatedSkill)
         {
@@ -98,7 +98,7 @@ public class MagnetCatch : MonoBehaviour, ISkill
         }
     }
 
-    void Detach()
+    protected override void EndSkill()
     {
         if (activatedSkill)
         {

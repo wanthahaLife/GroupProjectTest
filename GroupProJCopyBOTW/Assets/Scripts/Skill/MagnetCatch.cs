@@ -5,6 +5,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class MagnetCatch : MonoBehaviour, ISkill
 {
     public float magnetDistance;
@@ -14,16 +18,24 @@ public class MagnetCatch : MonoBehaviour, ISkill
     bool IsMagnetic => target != null;
     bool activatedSkill = false;
 
+    Transform destinationX;
+
     IMagnetic target;
     Transform targetTransform;
     Transform targetOriginParent;
     Rigidbody targetRigid;
-    Vector3 targetOffset;
+    Vector3 targetStartLocalPosition;
+    Vector3 hitPoint;
 
     Player player;
     PlayerVCam playerVCam;
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
+
+    private void Awake()
+    {
+        destinationX = transform.GetChild(0);
+    }
 
     private void Start()
     {
@@ -41,10 +53,15 @@ public class MagnetCatch : MonoBehaviour, ISkill
     {
         if(activatedSkill)
         {
-            //targetTransform.localPosition = targetOffset;
-            //Debug.Log(targetTransform.parent.TransformDirection(targetTransform.localPosition) + " " + targetOffset);
-            //Vector3 localPos = targetTransform.parent.InverseTransformDirection(targetTransform.position);
-            targetRigid.MovePosition(targetTransform.parent.position + targetOffset);  // targetTransform.parent.position + 
+            /*float dirX = destinationX.position.x - targetRigid.position.x;
+            if(dirX.sqrMagnitude > 0.01f)
+            {
+                //Debug.Log(destination.position + " " + targetRigid.position);
+                targetRigid.MovePosition(targetRigid.position + dirX.normalized * Time.fixedDeltaTime * targetSpeed);
+            }*/
+            /*Vector3 pos = Camera.main.ViewportToWorldPoint(Center);
+            pos.z = targetTransform.position.z + 5;
+            targetTransform.position = pos;*/
         }
     }
 
@@ -59,20 +76,24 @@ public class MagnetCatch : MonoBehaviour, ISkill
             target = targetTransform.GetComponent<IMagnetic>();
             if (IsMagnetic)
             {
-                               
+                hitPoint = hit.point;
             }
         }
     }
 
     void Attach()
     {
-        if (IsMagnetic)
+        if (IsMagnetic && !activatedSkill)
         {
+            destinationX.position = hitPoint;
+            destinationX.parent = player.transform.GetChild(1);
+
+
             targetOriginParent = targetTransform.parent;
-            targetTransform.parent = player.transform.GetChild(1);
-            targetOffset = targetTransform.localPosition;
+            targetTransform.parent = destinationX;
             targetRigid = targetTransform.GetComponent<Rigidbody>();
             target.Attach();
+
             activatedSkill = true;
         }
     }
@@ -85,22 +106,24 @@ public class MagnetCatch : MonoBehaviour, ISkill
             target = null;
             activatedSkill = false;
             targetTransform.parent = targetOriginParent;
+
+            destinationX.parent = transform;
         }
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.blue;
-        Vector3 vec = Vector3.zero;
-        if (playerVCam != null)
-        {
-            vec = playerVCam.GetWorldPositionCenter();
-        }
-        Gizmos.DrawSphere(vec, 0.5f);
-
         Ray ray = Camera.main.ViewportPointToRay(Center);
-        Gizmos.DrawRay(ray);
+        Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
+        // 레이캐스트 보여주는 기즈모
+        if(hit.transform != null)
+        {
+            Gizmos.color = Color.red;
+            Vector3 vec = Camera.main.ViewportToWorldPoint(Center);
+            Gizmos.DrawLine(vec, hit.point);
+        }
+
     }
 
 #endif

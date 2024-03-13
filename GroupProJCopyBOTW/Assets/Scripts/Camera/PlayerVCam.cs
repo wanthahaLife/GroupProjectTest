@@ -45,7 +45,7 @@ public class PlayerVCam : MonoBehaviour
             cameraRoot = player.transform.GetChild(1);
             vCam.Follow = cameraRoot;
             player.onSkill += OnSkillCamera;
-            player.activatedSkill += OriginCamera;
+            //player.activatedSkill += OriginCamera;
             player.inactivatedSkill += OriginCamera;
             onCameraRotate += player.RotatePlayer;
         }

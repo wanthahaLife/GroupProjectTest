@@ -14,15 +14,19 @@ public class Player : MonoBehaviour
     PlayerInputActions inputActions;
     Vector3 inputDir = Vector3.zero;
     Transform character;
+    Animator animator;
 
     public Action onSkill;
     public Action activatedSkill;
     public Action inactivatedSkill;
 
+    readonly int Hash_IsMove = Animator.StringToHash("IsMove");
+
     private void Awake()
     {
         inputActions = new PlayerInputActions();
         character = transform.GetChild(0);
+        animator = character.GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -59,6 +63,7 @@ public class Player : MonoBehaviour
         inputDir.x = tempDir.x;
         inputDir.y = 0f;
         inputDir.z = tempDir.y;
+        animator.SetBool(Hash_IsMove, !context.canceled);
     }
 
     private void Update()

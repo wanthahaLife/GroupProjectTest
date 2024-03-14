@@ -23,6 +23,7 @@ public class RemoteBomb : Skill
     {
         base.OnEnable();
         carry = false;
+
     }
 
     protected override void StartSkill()
@@ -32,8 +33,6 @@ public class RemoteBomb : Skill
         {
             carry = true;
             rigid.isKinematic = true;
-            PlayerSkillController skillController = owner.SkillController;
-            transform.position = skillController.SkillRoot.position;
         }
     }
 
@@ -55,7 +54,6 @@ public class RemoteBomb : Skill
             SkillReactionObj skillReactionObj = obj.GetComponent<SkillReactionObj>();
             if(skillReactionObj != null)
             {
-                Debug.Log("발견");
                 Vector3 dir = obj.transform.position - transform.position;
                 Vector3 power = dir.normalized * force + obj.transform.up * forceY;
                 skillReactionObj.OnSkillAffect(skillName, power);

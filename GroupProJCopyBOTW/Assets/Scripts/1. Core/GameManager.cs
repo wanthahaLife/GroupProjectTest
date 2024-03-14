@@ -15,6 +15,19 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    PlayerVCam playerCam;
+    public PlayerVCam PlayerCam
+    {
+        get
+        {
+            if (playerCam == null)
+            {
+                playerCam = FindAnyObjectByType<PlayerVCam>();
+            }
+            return playerCam;
+        }
+    }
+
     SkillVCam skillCam;
     public SkillVCam SkillCam
     {
@@ -32,5 +45,6 @@ public class GameManager : Singleton<GameManager>
     {
         player = FindAnyObjectByType<Player>();
         skillCam = FindAnyObjectByType<SkillVCam>();
+        playerCam = FindAnyObjectByType<PlayerVCam>();
     }
 }

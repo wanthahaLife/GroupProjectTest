@@ -16,6 +16,7 @@ public class SkillReactionObj : MonoBehaviour
     }
 
     public ReactionType reactionType;
+    public ReactionType Type => reactionType;
 
     bool magnetReaction = false;
 
@@ -45,7 +46,6 @@ public class SkillReactionObj : MonoBehaviour
         switch (skillName)
         {
             case SkillName.RemoteBomb:
-                Debug.Log(reactionType);
                 if ((reactionType & ReactionType.Destroy) != 0)
                 {
                     Destroy(gameObject);

@@ -18,10 +18,18 @@ public class Skill : RecycleObject
     public bool canUse = false;
 
     protected Player owner;
+    protected Transform originParent = null;
+    protected PlayerSkillController skillController;
+
 
     protected virtual void Start()
     {
-        owner = GameManager.Instance.Player;
+        if (skillController != null)
+        {
+            owner.SkillController.activatedSkill += StartSkill;
+            owner.SkillController.onSkill += UseSkill;
+            owner.SkillController.inactivatedSkill += EndSkill;
+        }
     }
 
     protected override void OnEnable()
@@ -31,20 +39,31 @@ public class Skill : RecycleObject
         {
             owner = GameManager.Instance.Player;
         }
+        if(skillController == null)
+        {
+            skillController = owner.SkillController;
+        }
+        originParent = transform.parent;
+
+        transform.parent = skillController.SkillRoot;
+        transform.position = skillController.SkillRoot.position;
+        transform.forward = owner.transform.forward;
     }
 
     protected virtual void StartSkill()
     {
-
+        GameManager.Instance.SkillCam.VCam.Priority = 20;
     }
 
     protected virtual void UseSkill()
     {
 
+        GameManager.Instance.SkillCam.VCam.Priority = 1;
     }
 
     protected virtual void EndSkill()
     {
+        GameManager.Instance.SkillCam.VCam.Priority = 1;
 
     }
 }

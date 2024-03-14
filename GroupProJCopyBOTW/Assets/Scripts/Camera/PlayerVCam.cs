@@ -20,6 +20,7 @@ public class PlayerVCam : MonoBehaviour
     protected float angleX = 0f;
 
     protected CinemachineVirtualCamera vCam;
+    public CinemachineVirtualCamera VCam => vCam;
     protected Vector2 currMousePos;
     protected Vector2 preMousePos;
     protected Transform cameraRoot;
@@ -27,6 +28,9 @@ public class PlayerVCam : MonoBehaviour
     protected Player player;
 
     readonly protected Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
+
+    public Action<Quaternion> onCameraRotate;
+    public Action<Vector3> onMouseMove;
 
     private void Awake()
     {
@@ -42,7 +46,6 @@ public class PlayerVCam : MonoBehaviour
         {
             cameraRoot = player.transform.GetChild(1);
             vCam.Follow = cameraRoot;
-            onCameraRotate += player.RotatePlayer;
         }
         else
         {
@@ -53,8 +56,6 @@ public class PlayerVCam : MonoBehaviour
         originCameraOffset = personFollow.ShoulderOffset;
     }
 
-    public Action<Quaternion> onCameraRotate;
-    public Action<Vector3> onCameraMove;
 
     protected virtual void LateUpdate()
     {
@@ -70,7 +71,7 @@ public class PlayerVCam : MonoBehaviour
         Quaternion rotate = Quaternion.Euler(angleX, angleY, 0);
         cameraRoot.rotation = rotate;
 
-        onCameraRotate?.Invoke(rotate);
+        onMouseMove?.Invoke(dir);
     }
 
     public Vector3 GetWorldPositionCenter()

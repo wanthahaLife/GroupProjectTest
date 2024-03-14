@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 2.0f;
 
+    bool isMoveInput = false;
 
     PlayerInputActions inputActions;
     Vector3 inputDir = Vector3.zero;
@@ -32,6 +33,7 @@ public class Player : MonoBehaviour
         animator = character.GetComponent<Animator>();
         skillController = transform.GetComponent<PlayerSkillController>();
     }
+
 
     private void OnEnable()
     {
@@ -74,6 +76,7 @@ public class Player : MonoBehaviour
         inputDir.x = tempDir.x;
         inputDir.y = 0f;
         inputDir.z = tempDir.y;
+        isMoveInput = !context.canceled;
         animator.SetBool(Hash_IsMove, !context.canceled);
     }
 
@@ -85,12 +88,17 @@ public class Player : MonoBehaviour
             character.rotation = Quaternion.Slerp(character.rotation, Quaternion.LookRotation(inputDir) * transform.rotation, rotateSpeed * Time.deltaTime);
             //character.rotation = Quaternion.LookRotation(inputDir) * transform.rotation;
         }
+        if(isMoveInput)
+        {
+            LookForwardPlayer(Camera.main.transform.forward);
+        }
     }
 
-    public void RotatePlayer(Quaternion rotate)
+    void LookForwardPlayer(Vector3 rotate)
     {
-        rotate.x = 0;
-        rotate.z = 0;
-        transform.rotation = rotate;
+        //rotate.x = 0;
+        //rotate.z = 0;
+        rotate.y = 0;
+        transform.forward = rotate;
     }
 }

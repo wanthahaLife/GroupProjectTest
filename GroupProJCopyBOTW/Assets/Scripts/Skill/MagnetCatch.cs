@@ -20,16 +20,19 @@ public class MagnetCatch : Skill
     bool IsMagnetic => target != null;
     bool activatedSkill = false;
 
+    Vector3 cameraDir = Vector3.zero;
+
     /// <summary>
     /// 
     /// </summary>
     Transform destinationX;
 
-    IMagnetic target;
+    SkillReactionObj target;
     Transform targetTransform;
     Transform targetOriginParent;
     Rigidbody targetRigid;
     Vector3 hitPoint;
+
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
     readonly Vector3 Top = new Vector3(0f, 1.0f, 0f);
@@ -39,38 +42,46 @@ public class MagnetCatch : Skill
     {
         destinationX = transform.GetChild(0);
     }
-
     protected override void Start()
     {
-        owner = GameManager.Instance.Player;
-        if(owner != null)
-        {
-            owner.SkillController.onSkill += UseSkill;
-            owner.SkillController.activatedSkill += StartSkill;
-            owner.SkillController.inactivatedSkill += EndSkill;
-        }
+        base.Start();
+        PlayerVCam vcam = GameManager.Instance.PlayerCam;
+        vcam.onMouseMove += CameraMove;
     }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+    }
+
 
     private void FixedUpdate()
     {
         if(activatedSkill)
         {
-            /*float dirX = destinationX.position.x - targetRigid.position.x;
-            if(dirX.sqrMagnitude > 0.01f)
-            {
-                //Debug.Log(destination.position + " " + targetRigid.position);
-                targetRigid.MovePosition(targetRigid.position + dirX.normalized * Time.fixedDeltaTime * targetSpeed);
-            }*/
-            /*Vector3 pos = Camera.main.ViewportToWorldPoint(Center);
-            pos.z = targetTransform.position.z + 5;
-            targetTransform.position = pos;*/
+            MoveTarget();
         }
     }
 
-
-
     protected override void StartSkill()
     {
+        base.StartSkill();
+        Ray ray = Camera.main.ViewportPointToRay(Center);
+        Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
+        targetTransform = hit.transform;
+        if (targetTransform != null)
+        {
+            target = targetTransform.GetComponent<SkillReactionObj>();
+            if (IsMagnetic)
+            {
+                hitPoint = hit.point;
+            }
+        }
+    }
+    protected override void UseSkill()
+    {
+        base.UseSkill();
         if (IsMagnetic && !activatedSkill)
         {
             destinationX.position = hitPoint;
@@ -80,31 +91,18 @@ public class MagnetCatch : Skill
             targetOriginParent = targetTransform.parent;
             targetTransform.parent = destinationX;
             targetRigid = targetTransform.GetComponent<Rigidbody>();
-            target.Attach();
+            target.OnSkillAffect(skillName);
 
             activatedSkill = true;
-        }
-    }
-    protected override void UseSkill()
-    {
-        Ray ray = Camera.main.ViewportPointToRay(Center);
-        Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
-        targetTransform = hit.transform;
-        if (targetTransform != null)
-        {
-            target = targetTransform.GetComponent<IMagnetic>();
-            if (IsMagnetic)
-            {
-                hitPoint = hit.point;
-            }
         }
     }
 
     protected override void EndSkill()
     {
+        base.EndSkill();
         if (activatedSkill)
         {
-            target.Detach();
+            target.FinishSkillAffect(skillName);
             target = null;
             activatedSkill = false;
             targetTransform.parent = targetOriginParent;
@@ -113,27 +111,21 @@ public class MagnetCatch : Skill
         }
     }
 
-    void Move()
+    void MoveTarget()
     {
-        float x = (destinationX.position - targetTransform.position).normalized.x;
-        float y = Time.fixedDeltaTime * moveYSpeed;
+
+        float dirX = Camera.main.ViewportToWorldPoint(Center).x - targetTransform.position.x * moveXSpeed;
+        float dirY = cameraDir.y * moveYSpeed;
+        float dirZ = 0f;
+
+        Vector3 dir = new Vector3(dirX, dirY, dirZ);
+
+        targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
     }
 
-    float DirectionX()
+    void CameraMove(Vector3 pos)
     {
-        float dir = destinationX.position.x;
-        return dir;
-    }
-
-    float DirectionY()
-    {
-        float dir = Camera.main.ViewportToWorldPoint(Center).y;
-        return dir;
-    }
-
-    void MoveZ()
-    {
-
+        cameraDir = pos;
     }
 
 #if UNITY_EDITOR
@@ -151,5 +143,17 @@ public class MagnetCatch : Skill
 
     }
 
+    public void TestStartSkill()
+    {
+        StartSkill();
+    }
+    public void TestUseSkill()
+    {
+        UseSkill();
+    }
+    public void TestFinishSkill()
+    {
+        EndSkill();
+    }
 #endif
 }

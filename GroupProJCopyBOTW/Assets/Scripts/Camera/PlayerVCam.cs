@@ -13,22 +13,20 @@ public class PlayerVCam : MonoBehaviour
     public float rotateAngle = 2.0f;
     public float skillCameraSpeed = 10.0f;
     public float maxAngle = 30.0f;
-    public Vector3 skillCameraOffset = new Vector3(-2.0f, 1.5f, 0.0f);
 
-    Vector3 originCameraOffset;
+    protected Vector3 originCameraOffset;
 
-    float angleY = 0f;
-    float angleX = 0f;
+    protected float angleY = 0f;
+    protected float angleX = 0f;
 
-    bool useSkill = false;
+    protected CinemachineVirtualCamera vCam;
+    protected Vector2 currMousePos;
+    protected Vector2 preMousePos;
+    protected Transform cameraRoot;
+    protected Cinemachine3rdPersonFollow personFollow;
+    protected Player player;
 
-    CinemachineVirtualCamera vCam;
-    Vector2 currMousePos;
-    Vector2 preMousePos;
-    Transform cameraRoot;
-    Cinemachine3rdPersonFollow personFollow;
-
-    readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
+    readonly protected Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
     private void Awake()
     {
@@ -37,16 +35,13 @@ public class PlayerVCam : MonoBehaviour
         preMousePos = currMousePos;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
-        Player player = GameManager.Instance.Player;
-        if(player != null )
+        player = GameManager.Instance.Player;
+        if (player != null )
         {
             cameraRoot = player.transform.GetChild(1);
             vCam.Follow = cameraRoot;
-            player.onSkill += OnSkillCamera;
-            //player.activatedSkill += OriginCamera;
-            player.inactivatedSkill += OriginCamera;
             onCameraRotate += player.RotatePlayer;
         }
         else
@@ -61,7 +56,7 @@ public class PlayerVCam : MonoBehaviour
     public Action<Quaternion> onCameraRotate;
     public Action<Vector3> onCameraMove;
 
-    private void LateUpdate()
+    protected virtual void LateUpdate()
     {
         preMousePos = currMousePos;
         currMousePos = Mouse.current.position.value;
@@ -78,36 +73,6 @@ public class PlayerVCam : MonoBehaviour
         onCameraRotate?.Invoke(rotate);
     }
 
-    private void Update()
-    {
-        if (useSkill)
-        {
-            Vector3 offset = skillCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.01f)
-            {
-                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
-            }
-        }
-        else
-        {
-            Vector3 offset = originCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.01f)
-            {
-                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
-            }
-        }
-    }
-
-    void OnSkillCamera()
-    {
-        useSkill = true;
-    }
-
-    void OriginCamera()
-    {
-        useSkill = false;
-    }
-
     public Vector3 GetWorldPositionCenter()
     {
         Vector3 screenPoint = Camera.main.ViewportToScreenPoint(Center);
@@ -116,14 +81,5 @@ public class PlayerVCam : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    public void TestSkillCamera()
-    {
-        OnSkillCamera();
-    }
-
-    public void TestOriginCamera()
-    {
-        OriginCamera();
-    }
 #endif
 }

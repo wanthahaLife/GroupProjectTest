@@ -19,9 +19,9 @@ public class Player : MonoBehaviour
     PlayerSkillController skillController;
     public PlayerSkillController SkillController => skillController;
 
-    public Action onSkill;
-    public Action activatedSkill;
-    public Action inactivatedSkill;
+    public Action rightClick;
+    public Action leftClick;
+    public Action<int> skillSelect;
 
     readonly int Hash_IsMove = Animator.StringToHash("IsMove");
 
@@ -40,25 +40,32 @@ public class Player : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.RightClick.performed += OnRightClick;
+        inputActions.Player.Skill.performed += OnSkillSelect;
     }
+
 
     private void OnDisable()
     {
+        inputActions.Player.Skill.performed -= OnSkillSelect;
         inputActions.Player.RightClick.performed -= OnRightClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Disable();
     }
-
-    private void OnRightClick(InputAction.CallbackContext context)
+    private void OnSkillSelect(InputAction.CallbackContext context)
     {
-        inactivatedSkill?.Invoke();
+        skillSelect?.Invoke(context.ReadValue<int>());
     }
 
-    private void OnLeftClick(InputAction.CallbackContext context)
+    private void OnRightClick(InputAction.CallbackContext _)
     {
-        activatedSkill?.Invoke();
+        rightClick?.Invoke();
+    }
+
+    private void OnLeftClick(InputAction.CallbackContext _)
+    {
+        leftClick?.Invoke();
     }
 
     private void OnMove(InputAction.CallbackContext context)

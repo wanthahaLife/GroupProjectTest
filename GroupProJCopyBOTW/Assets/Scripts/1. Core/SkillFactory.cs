@@ -3,80 +3,51 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-public enum EnemyType
+public enum SkillType
 {
-    EnemyNormal = 0,
-    Watcher,
-    Tentacle,
-    _EnemyBase,
+    RemoteBombPool = 0,
+    MagnetCatchPool,
 }
 
 public class SkillFactory : Singleton<SkillFactory>
 {
-    //EnemyBasePool enemyBasePool;
+    RemoteBombPool remoteBombPool;
 
-    /*protected override void OnInitialize()
+    protected override void OnInitialize()
     {
         base.OnInitialize();
 
-        enemyNormalPool = GetComponentInChildren<EnemyNormalPool>();
-        if (enemyNormalPool != null) enemyNormalPool.Initialize();
+        remoteBombPool = GetComponentInChildren<RemoteBombPool>();
+        if (remoteBombPool != null) remoteBombPool.Initialize();
     }
  
     /// <summary>
-    /// 풀에 있는 게임 오브젝트 하나 가져오기
+    /// 풀에 있는 스킬 오브젝트 하나 가져오기
     /// </summary>
     /// <param name="type">가져올 오브젝트의 종류</param>
     /// <param name="position">오브젝트가 배치될 위치</param>
     /// <param name="angle">오브젝트의 초기 각도</param>
     /// <returns>활성화된 오브젝트</returns>
-    public GameObject GetObject(EnemyType type, Vector3? position = null, Vector3? euler = null)
+    public GameObject GetObject(SkillType type, Vector3? position = null, Vector3? euler = null)
     {
         GameObject result = null;
         switch (type)
         {
-            case EnemyType.EnemyNormal:
-                result = enemyNormalPool.GetObject(position, euler).gameObject;
-                break;
-            case EnemyType.Watcher:
-                result = watcherPool.GetObject(position, euler).gameObject;
-                break;
-            case EnemyType.Tentacle:
-                result = tentaclePool.GetObject(position, euler).gameObject;
-                break;
-            case EnemyType._EnemyBase:
-                result = enemyBasePool.GetObject(position, euler).gameObject;
+            case SkillType.RemoteBombPool:
+                result = remoteBombPool.GetObject(position, euler).gameObject;
                 break;
         }
 
         return result;
     }
     /// <summary>
-    /// 보통 적 유닛을 가져오는 함수
+    /// 리모컨폭탄을 가져오는 함수
     /// </summary>
     /// <param name="position">배치될 위치</param>
-    /// <returns>활성화된 보통 적 유닛</returns>
-    public EnemyNormal GetEnemyNormal(Vector3 position, float angle = 0.0f)
+    /// <returns>활성화된 리모컨폭탄</returns>
+    public RemoteBomb GetRemoteBomb(Vector3? position = null, float angle = 0.0f)
     {
-        return enemyNormalPool.GetObject(position, angle * Vector3.forward);
+        return remoteBombPool.GetObject(position, angle * Vector3.forward);
     }
-    /// <summary>
-    /// 보통 적 유닛을 가져오는 함수
-    /// </summary>
-    /// <param name="position">배치될 위치</param>
-    /// <returns>활성화된 보통 적 유닛</returns>
-    public EnemyWatcher EnemyWatcherNormal(Vector3 position, float angle = 0.0f)
-    {
-        return watcherPool.GetObject(position, angle * Vector3.forward);
-    }
-    /// <summary>
-    /// 보통 적 유닛을 가져오는 함수
-    /// </summary>
-    /// <param name="position">배치될 위치</param>
-    /// <returns>활성화된 보통 적 유닛</returns>
-    public Tentacle GetTentacle(Vector3 position, float angle = 0.0f)
-    {
-        return tentaclePool.GetObject(position, angle * Vector3.forward);
-    }
-    */
+    
 }

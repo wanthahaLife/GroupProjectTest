@@ -37,11 +37,11 @@ public class RemoteBomb : Skill
         Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
         foreach(Collider obj in objects)
         {
-            IDestructible destruct = obj.GetComponent<IDestructible>();
+            ISkillAffected destruct = obj.GetComponent<ISkillAffected>();
             IMovable movable = obj.GetComponent<IMovable>();
             if(destruct != null)
             {
-                destruct.DestoryObject();
+                destruct.OnSkillAffect(skillName);
             }
             else if(movable != null)
             {
@@ -49,8 +49,13 @@ public class RemoteBomb : Skill
                 movable.MoveForce(dir.normalized * force + obj.transform.up * forceY);
             }
         }
-        // 나중에 파티클 끝나면 파괴 + 재사용
-        //Destroy(gameObject);
+
+        Boom();
+    }
+
+    void Boom()
+    {
+
     }
 
 #if UNITY_EDITOR

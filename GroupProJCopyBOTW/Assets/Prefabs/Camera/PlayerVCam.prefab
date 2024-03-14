@@ -95,14 +95,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7214621828618488049}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.37048376, y: 0.3063148, z: -0.13088825, w: -0.8670533}
+  m_LocalRotation: {x: 0.37048268, y: -0.3063161, z: 0.13088559, w: 0.8670536}
   m_LocalPosition: {x: -2.061, y: 2.6669168, z: -4.2079144}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8129729805036637400}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 46.273, y: -38.915, z: 0}
 --- !u!114 &8678558249753879360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 183d30be4029b1245b54ba49434225b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateSpeed: 3
-  cameraSpeed: 10
-  maxAngle: 50
-  skillCameraOffset: {x: -2, y: 1.5, z: 0}
+  rotateAngle: 90
+  skillCameraSpeed: 10
+  maxAngle: 80

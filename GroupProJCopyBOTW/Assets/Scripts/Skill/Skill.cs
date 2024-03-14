@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Skill : MonoBehaviour
+public enum SkillName
 {
-    public enum SkillName
-    {
-        RemoteBomb,
-        RemoteBomb_Cube,
-        MagnetCatch,
-        TimeLock,
-        IceMaker
-    }
+    RemoteBomb = 1,
+    RemoteBomb_Cube = 1,
+    MagnetCatch = 2,
+    TimeLock = 3,
+    IceMaker = 4
+}
+
+public class Skill : RecycleObject
+{
     public SkillName skillName = SkillName.RemoteBomb;
     public float coolTime = 1.0f;
     protected float currCoolTime = 0.0f;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-interface IDestructible
+public class RemoteBombPool : ObjectPool<RemoteBomb>
 {
-    void DestoryObject();
+    
 }

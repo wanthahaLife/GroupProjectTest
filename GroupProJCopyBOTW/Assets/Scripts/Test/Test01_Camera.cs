@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Test01_Camera : TestBase
 {
-    public PlayerVCam vCam;
+    public SkillVCam vCam;
     protected override void OnTest1(InputAction.CallbackContext context)
     {
         vCam.TestSkillCamera();

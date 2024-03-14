@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class SkillReactionObj : MonoBehaviour, ISkillAffected
+public class SkillReactionObj : MonoBehaviour
 {
     [Flags]
     public enum ReactionType
@@ -17,6 +17,8 @@ public class SkillReactionObj : MonoBehaviour, ISkillAffected
 
     public ReactionType reactionType;
 
+    bool magnetReaction = false;
+
     Rigidbody rigid;
 
     private void Awake()
@@ -26,33 +28,43 @@ public class SkillReactionObj : MonoBehaviour, ISkillAffected
 
     private void OnCollisionExit(Collision collision)
     {
-        rigid.velocity = Vector3.zero;
-        rigid.angularVelocity = Vector3.zero;
+        if (magnetReaction)
+        {
+            rigid.velocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
+        }
     }
 
     public void OnSkillAffect(SkillName skillName)
     {
-        switch(skillName)
+        OnSkillAffect(skillName, Vector3.zero);
+    }
+
+    public void OnSkillAffect(SkillName skillName, Vector3 power)
+    {
+        switch (skillName)
         {
             case SkillName.RemoteBomb:
+                Debug.Log(reactionType);
                 if ((reactionType & ReactionType.Destroy) != 0)
                 {
                     Destroy(gameObject);
                 }
-                else if(((reactionType & ReactionType.Move) != 0))
+                else if (((reactionType & ReactionType.Move) != 0))
                 {
-
+                    rigid.AddForce(power, ForceMode.Impulse);
                 }
-                    break;
+                break;
             case SkillName.MagnetCatch:
                 if ((reactionType & ReactionType.Magnetic) != 0)
                 {
                     rigid.useGravity = false;
+                    magnetReaction = true;
                 }
                 break;
             case SkillName.IceMaker:
                 break;
-            case SkillName.TimeLock: 
+            case SkillName.TimeLock:
                 break;
         }
     }
@@ -67,6 +79,7 @@ public class SkillReactionObj : MonoBehaviour, ISkillAffected
                 if ((reactionType & ReactionType.Magnetic) != 0)
                 {
                     rigid.useGravity = true;
+                    magnetReaction = false;
                 }
                 break;
             case SkillName.IceMaker:

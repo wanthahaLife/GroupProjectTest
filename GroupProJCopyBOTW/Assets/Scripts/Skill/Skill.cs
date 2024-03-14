@@ -17,11 +17,20 @@ public class Skill : RecycleObject
     protected float currCoolTime = 0.0f;
     public bool canUse = false;
 
-    protected Player player;
+    protected Player owner;
 
-    private void Start()
+    protected virtual void Start()
     {
-        player = GameManager.Instance.Player;
+        owner = GameManager.Instance.Player;
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        if(owner == null)
+        {
+            owner = GameManager.Instance.Player;
+        }
     }
 
     protected virtual void StartSkill()

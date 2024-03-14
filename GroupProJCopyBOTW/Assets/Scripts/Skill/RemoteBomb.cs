@@ -10,6 +10,8 @@ public class RemoteBomb : Skill
     public float forceY = 5.0f;
     public float boomRange = 1.2f;
 
+    bool carry = false;
+
 
     Rigidbody rigid;
     private void Awake()
@@ -17,19 +19,32 @@ public class RemoteBomb : Skill
         rigid = GetComponent<Rigidbody>();
     }
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        carry = false;
+    }
+
     protected override void StartSkill()
     {
         base.StartSkill();
-        rigid.isKinematic = true;
-        PlayerSkillController skillController = player.SkillController;
-        transform.position = skillController.SkillRoot.position;
+        if (!carry)
+        {
+            carry = true;
+            rigid.isKinematic = true;
+            PlayerSkillController skillController = owner.SkillController;
+            transform.position = skillController.SkillRoot.position;
+        }
     }
 
     protected override void UseSkill()
     {
-        rigid.isKinematic = false;
-        rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
-
+        if (carry)
+        {
+            rigid.isKinematic = false;
+            rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
+            carry = false;
+        }
     }
 
     void RemoteOn()
@@ -37,16 +52,13 @@ public class RemoteBomb : Skill
         Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
         foreach(Collider obj in objects)
         {
-            ISkillAffected destruct = obj.GetComponent<ISkillAffected>();
-            IMovable movable = obj.GetComponent<IMovable>();
-            if(destruct != null)
+            SkillReactionObj skillReactionObj = obj.GetComponent<SkillReactionObj>();
+            if(skillReactionObj != null)
             {
-                destruct.OnSkillAffect(skillName);
-            }
-            else if(movable != null)
-            {
+                Debug.Log("발견");
                 Vector3 dir = obj.transform.position - transform.position;
-                movable.MoveForce(dir.normalized * force + obj.transform.up * forceY);
+                Vector3 power = dir.normalized * force + obj.transform.up * forceY;
+                skillReactionObj.OnSkillAffect(skillName, power);
             }
         }
 
@@ -55,7 +67,7 @@ public class RemoteBomb : Skill
 
     void Boom()
     {
-
+        gameObject.SetActive(false);
     }
 
 #if UNITY_EDITOR

@@ -5,10 +5,14 @@ using UnityEngine.InputSystem;
 
 public class Test03_RemoteBomb : TestBase
 {
-    public RemoteBomb bomb;
+    RemoteBomb bomb;
+
+    private void Start()
+    {
+    }
     protected override void OnTest1(InputAction.CallbackContext context)
     {
-
+        bomb = SkillFactory.Instance.GetRemoteBomb();
         bomb.TestSkill();
     }
 

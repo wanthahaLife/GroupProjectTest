@@ -40,14 +40,14 @@ public class MagnetCatch : Skill
         destinationX = transform.GetChild(0);
     }
 
-    private void Start()
+    protected override void Start()
     {
-        player = GameManager.Instance.Player;
-        if(player != null)
+        owner = GameManager.Instance.Player;
+        if(owner != null)
         {
-            player.SkillController.onSkill += UseSkill;
-            player.SkillController.activatedSkill += StartSkill;
-            player.SkillController.inactivatedSkill += EndSkill;
+            owner.SkillController.onSkill += UseSkill;
+            owner.SkillController.activatedSkill += StartSkill;
+            owner.SkillController.inactivatedSkill += EndSkill;
         }
     }
 
@@ -74,7 +74,7 @@ public class MagnetCatch : Skill
         if (IsMagnetic && !activatedSkill)
         {
             destinationX.position = hitPoint;
-            destinationX.parent = player.transform.GetChild(1);
+            destinationX.parent = owner.transform.GetChild(1);
 
 
             targetOriginParent = targetTransform.parent;

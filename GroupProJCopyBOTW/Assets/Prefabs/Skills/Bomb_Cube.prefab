@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d3a9fab6aeb608459fac38b0099665c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillName: 0
+  skillName: 1
   coolTime: 1
   canUse: 0
   throwPower: 5

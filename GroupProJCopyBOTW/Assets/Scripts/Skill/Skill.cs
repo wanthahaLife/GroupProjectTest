@@ -26,9 +26,9 @@ public class Skill : RecycleObject
     {
         if (skillController != null)
         {
-            owner.SkillController.activatedSkill += StartSkill;
-            owner.SkillController.onSkill += UseSkill;
-            owner.SkillController.inactivatedSkill += EndSkill;
+            owner.SkillController.StartSkill += StartSkill;
+            owner.SkillController.useSkill += UseSkill;
+            owner.SkillController.endSkill += EndSkill;
         }
     }
 

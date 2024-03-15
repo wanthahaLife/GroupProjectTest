@@ -15,4 +15,19 @@ public class Test01_Camera : TestBase
     {
         vCam.TestOriginCamera();
     }
+    protected override void OnTest3(InputAction.CallbackContext context)
+    {
+        PlayerSkillController player = GameManager.Instance.Player.SkillController;
+        player.StartSkill?.Invoke();
+    }
+    protected override void OnTest4(InputAction.CallbackContext context)
+    {
+        PlayerSkillController player = GameManager.Instance.Player.SkillController;
+        player.useSkill?.Invoke();
+    }
+    protected override void OnTest5(InputAction.CallbackContext context)
+    {
+        PlayerSkillController player = GameManager.Instance.Player.SkillController;
+        player.endSkill?.Invoke();
+    }
 }

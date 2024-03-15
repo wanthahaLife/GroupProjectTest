@@ -7,24 +7,17 @@ using UnityEngine.InputSystem;
 
 public class SkillVCam : PlayerVCam
 {
-    //public Vector3 skillCameraOffset = new Vector3(-0.8f, 1.2f, 0.0f);
-    //bool useSkill = false;
-
-    private void Awake()
-    {
-        vCam = GetComponent<CinemachineVirtualCamera>();
-        currMousePos = Mouse.current.position.value;
-        preMousePos = currMousePos;
-    }
+    public Vector3 skillCameraOffset = new Vector3(-0.8f, 1.2f, 0.0f);
+    public float cameraSpeed = 10.0f;
 
     protected override void Start()
     {
         base.Start();
         if (player != null)
         {
-            player.SkillController.onSkill += OnSkillCamera;
-            //player.activatedSkill += OriginCamera;
-            player.SkillController.inactivatedSkill += OriginCamera;
+            player.SkillController.StartSkill += StartSkillCamera;
+            player.SkillController.useSkill += UsingSkillCamera;
+            player.SkillController.endSkill += EndSkillCamera;
         }
         else
         {
@@ -32,47 +25,33 @@ public class SkillVCam : PlayerVCam
         }
     }
 
-    private void Update()
+    protected virtual void StartSkillCamera()
     {
-        /*if (useSkill)
-        {
-            Vector3 offset = skillCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.01f)
-            {
-                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
-            }
-        }
-        else
-        {
-            Vector3 offset = originCameraOffset - personFollow.ShoulderOffset;
-            if ((offset).sqrMagnitude > 0.01f)
-            {
-                personFollow.ShoulderOffset += skillCameraSpeed * Time.deltaTime * offset.normalized;
-            }
-        }*/
-    }
-
-    void OnSkillCamera()
-    {
+        // 스킬 사용하기 위한 카메라 움직임
         vCam.Priority = 20;
-        //useSkill = true;
     }
 
-    void OriginCamera()
+    protected virtual void UsingSkillCamera()
     {
+        // 스킬 카메라 전용
         vCam.Priority = 1;
-        //useSkill = false;
+    }
+
+    protected virtual void EndSkillCamera()
+    {
+        // 원래 카메라로 돌아가기
+        vCam.Priority = 1;
     }
 
 #if UNITY_EDITOR
     public void TestSkillCamera()
     {
-        OnSkillCamera();
+        StartSkillCamera();
     }
 
     public void TestOriginCamera()
     {
-        OriginCamera();
+        UsingSkillCamera();
     }
 #endif
 }

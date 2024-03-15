@@ -11,10 +11,8 @@ public class PlayerVCam : MonoBehaviour
     /// 회전 속도
     /// </summary>
     public float rotateAngle = 2.0f;
-    public float skillCameraSpeed = 10.0f;
     public float maxAngle = 30.0f;
 
-    protected Vector3 originCameraOffset;
 
     protected float angleY = 0f;
     protected float angleX = 0f;
@@ -25,6 +23,8 @@ public class PlayerVCam : MonoBehaviour
     protected Vector2 preMousePos;
     protected Transform cameraRoot;
     protected Cinemachine3rdPersonFollow personFollow;
+    public Vector3 Offset => personFollow.ShoulderOffset;
+
     protected Player player;
 
     readonly protected Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
@@ -32,9 +32,10 @@ public class PlayerVCam : MonoBehaviour
     public Action<Quaternion> onCameraRotate;
     public Action<Vector3> onMouseMove;
 
-    private void Awake()
+    protected void Awake()
     {
         vCam = GetComponent<CinemachineVirtualCamera>();
+        personFollow = vCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
         currMousePos = Mouse.current.position.value;
         preMousePos = currMousePos;
     }
@@ -52,8 +53,6 @@ public class PlayerVCam : MonoBehaviour
             Debug.LogWarning("Player가 없습니다.");
         }
 
-        personFollow = vCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
-        originCameraOffset = personFollow.ShoulderOffset;
     }
 
 

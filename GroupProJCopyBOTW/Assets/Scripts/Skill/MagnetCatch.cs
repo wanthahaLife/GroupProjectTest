@@ -32,6 +32,7 @@ public class MagnetCatch : Skill
     Transform targetOriginParent;
     Rigidbody targetRigid;
     Vector3 hitPoint;
+    PlayerVCam vcam;
 
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
@@ -45,13 +46,20 @@ public class MagnetCatch : Skill
     protected override void Start()
     {
         base.Start();
-        PlayerVCam vcam = GameManager.Instance.PlayerCam;
+        if (vcam == null)
+        {
+            vcam = GameManager.Instance.PlayerCam;
+        }
         vcam.onMouseMove += CameraMove;
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        if(vcam == null)
+        {
+            vcam = GameManager.Instance.PlayerCam;
+        }
 
     }
 
@@ -84,6 +92,7 @@ public class MagnetCatch : Skill
         base.UseSkill();
         if (IsMagnetic && !activatedSkill)
         {
+            //vcam.
             destinationX.position = hitPoint;
             destinationX.parent = owner.transform.GetChild(1);
 

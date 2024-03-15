@@ -9,9 +9,9 @@ public class PlayerSkillController : MonoBehaviour
     public Transform SkillRoot => skillRoot;
     Player player;
 
-    public Action onSkill;
-    public Action activatedSkill;
-    public Action inactivatedSkill;
+    public Action useSkill;
+    public Action StartSkill;
+    public Action endSkill;
 
     private void Awake()
     {
@@ -27,12 +27,12 @@ public class PlayerSkillController : MonoBehaviour
         }
         else
         {
-            player.leftClick += activatedSkill;
-            player.rightClick += inactivatedSkill;
+            /*player.leftClick += StartSkill;
+            player.rightClick += endSkill;
             player.skillSelect += (skillName) => {
                 SkillSelect((SkillName)skillName);
-                onSkill?.Invoke();
-            };
+                useSkill?.Invoke();
+            };*/
             
         }
     }

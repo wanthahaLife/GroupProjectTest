@@ -33,6 +33,7 @@ public class MagnetCatch : Skill
     Rigidbody targetRigid;
     Vector3 hitPoint;
     PlayerVCam vcam;
+    Cinemachine.CinemachineTargetGroup targetGroup;
 
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
@@ -42,6 +43,7 @@ public class MagnetCatch : Skill
     private void Awake()
     {
         destinationX = transform.GetChild(0);
+        targetGroup = GetComponentInChildren<Cinemachine.CinemachineTargetGroup>();
     }
     protected override void Start()
     {
@@ -96,7 +98,7 @@ public class MagnetCatch : Skill
             destinationX.position = hitPoint;
             destinationX.parent = owner.transform.GetChild(1);
 
-
+            targetGroup.m_Targets[0].target = targetTransform;
             targetOriginParent = targetTransform.parent;
             targetTransform.parent = destinationX;
             targetRigid = targetTransform.GetComponent<Rigidbody>();

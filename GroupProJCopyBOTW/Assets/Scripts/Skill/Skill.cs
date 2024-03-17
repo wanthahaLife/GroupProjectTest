@@ -26,7 +26,7 @@ public class Skill : RecycleObject
     {
         if (skillController != null)
         {
-            owner.SkillController.StartSkill += StartSkill;
+            owner.SkillController.startSkill += StartSkill;
             owner.SkillController.useSkill += UseSkill;
             owner.SkillController.endSkill += EndSkill;
         }
@@ -52,18 +52,15 @@ public class Skill : RecycleObject
 
     protected virtual void StartSkill()
     {
-        GameManager.Instance.SkillCam.VCam.Priority = 20;
     }
 
     protected virtual void UseSkill()
     {
 
-        GameManager.Instance.SkillCam.VCam.Priority = 1;
     }
 
     protected virtual void EndSkill()
     {
-        GameManager.Instance.SkillCam.VCam.Priority = 1;
 
     }
 }

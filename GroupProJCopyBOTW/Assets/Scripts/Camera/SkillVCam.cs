@@ -15,7 +15,7 @@ public class SkillVCam : PlayerVCam
         base.Start();
         if (player != null)
         {
-            player.SkillController.StartSkill += StartSkillCamera;
+            player.SkillController.startSkill += StartSkillCamera;
             player.SkillController.useSkill += UsingSkillCamera;
             player.SkillController.endSkill += EndSkillCamera;
         }

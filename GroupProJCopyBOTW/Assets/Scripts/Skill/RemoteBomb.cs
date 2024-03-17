@@ -51,7 +51,7 @@ public class RemoteBomb : Skill
         Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
         foreach(Collider obj in objects)
         {
-            SkillReactionObj skillReactionObj = obj.GetComponent<SkillReactionObj>();
+            SkillReactionObject skillReactionObj = obj.GetComponent<SkillReactionObject>();
             if(skillReactionObj != null)
             {
                 Vector3 dir = obj.transform.position - transform.position;

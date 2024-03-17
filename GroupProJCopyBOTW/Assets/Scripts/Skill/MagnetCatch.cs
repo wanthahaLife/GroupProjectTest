@@ -27,7 +27,7 @@ public class MagnetCatch : Skill
     /// </summary>
     Transform destinationX;
 
-    SkillReactionObj target;
+    SkillReactionObject target;
     Transform targetTransform;
     Transform targetOriginParent;
     Rigidbody targetRigid;
@@ -65,7 +65,6 @@ public class MagnetCatch : Skill
 
     }
 
-
     private void FixedUpdate()
     {
         if(activatedSkill)
@@ -77,21 +76,12 @@ public class MagnetCatch : Skill
     protected override void StartSkill()
     {
         base.StartSkill();
-        Ray ray = Camera.main.ViewportPointToRay(Center);
-        Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
-        targetTransform = hit.transform;
-        if (targetTransform != null)
-        {
-            target = targetTransform.GetComponent<SkillReactionObj>();
-            if (IsMagnetic)
-            {
-                hitPoint = hit.point;
-            }
-        }
+        StartCoroutine(TargetCheck());
     }
     protected override void UseSkill()
     {
         base.UseSkill();
+        StopAllCoroutines();
         if (IsMagnetic && !activatedSkill)
         {
             //vcam.
@@ -99,8 +89,8 @@ public class MagnetCatch : Skill
             destinationX.parent = owner.transform.GetChild(1);
 
             targetGroup.m_Targets[0].target = targetTransform;
-            targetOriginParent = targetTransform.parent;
-            targetTransform.parent = destinationX;
+            //targetOriginParent = targetTransform.parent;
+            //targetTransform.parent = destinationX;
             targetRigid = targetTransform.GetComponent<Rigidbody>();
             target.OnSkillAffect(skillName);
 
@@ -116,9 +106,28 @@ public class MagnetCatch : Skill
             target.FinishSkillAffect(skillName);
             target = null;
             activatedSkill = false;
-            targetTransform.parent = targetOriginParent;
+            //targetTransform.parent = targetOriginParent;
 
             destinationX.parent = transform;
+        }
+    }
+
+    IEnumerator TargetCheck()
+    {
+        while (true) {
+        Ray ray = Camera.main.ViewportPointToRay(Center);
+            Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
+            targetTransform = hit.transform;
+            if (targetTransform != null)
+            {
+                target = targetTransform.GetComponent<SkillReactionObject>();
+                if (IsMagnetic)
+                {
+                    hitPoint = hit.point;
+                }
+            }
+
+            yield return null;
         }
     }
 

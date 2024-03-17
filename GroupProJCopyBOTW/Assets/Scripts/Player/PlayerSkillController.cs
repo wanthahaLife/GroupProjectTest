@@ -10,7 +10,7 @@ public class PlayerSkillController : MonoBehaviour
     Player player;
 
     public Action useSkill;
-    public Action StartSkill;
+    public Action startSkill;
     public Action endSkill;
 
     private void Awake()
@@ -52,4 +52,12 @@ public class PlayerSkillController : MonoBehaviour
                 break;
         }
     }
+
+#if UNITY_EDITOR
+    public void TestSkillSelect()
+    {
+
+    }
+
+#endif
 }

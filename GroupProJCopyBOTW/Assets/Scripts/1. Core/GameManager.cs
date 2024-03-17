@@ -22,7 +22,7 @@ public class GameManager : Singleton<GameManager>
         {
             if (playerCam == null)
             {
-                playerCam = FindAnyObjectByType<PlayerVCam>();
+                playerCam = GameObject.Find("PlayerVCam").GetComponent<PlayerVCam>();
             }
             return playerCam;
         }
@@ -35,7 +35,7 @@ public class GameManager : Singleton<GameManager>
         {
             if(skillCam == null)
             {
-                skillCam = FindAnyObjectByType<SkillVCam>();
+                skillCam = GameObject.Find("SkillVCam").GetComponent<SkillVCam>();
             }
             return skillCam;
         }
@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager>
     protected override void OnInitialize()
     {
         player = FindAnyObjectByType<Player>();
-        skillCam = FindAnyObjectByType<SkillVCam>();
-        playerCam = FindAnyObjectByType<PlayerVCam>();
+        skillCam = GameObject.Find("SkillVCam").GetComponent<SkillVCam>();
+        playerCam = GameObject.Find("PlayerVCam").GetComponent<PlayerVCam>();
     }
 }

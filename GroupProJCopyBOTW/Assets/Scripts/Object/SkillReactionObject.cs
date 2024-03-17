@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class SkillReactionObj : MonoBehaviour
+public class SkillReactionObject : MonoBehaviour
 {
     [Flags]
     public enum ReactionType

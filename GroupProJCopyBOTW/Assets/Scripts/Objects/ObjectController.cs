@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class SkillReactionObject : MonoBehaviour
+public class ObjectController : MonoBehaviour
 {
     public float Weight = 1.0f;
     bool carry = false;
@@ -18,6 +18,7 @@ public class SkillReactionObject : MonoBehaviour
         Destroy = 2,
         Magnetic = 4,
         Throw = 8,
+        Explosion = 16
     }
 
     public ReactionType reactionType;
@@ -27,19 +28,11 @@ public class SkillReactionObject : MonoBehaviour
     DestructibleObject destructibleObject;
     MagneticObject magneticObject;
     ThrowableObject throwableObject;
+    ExplosiveObject explosiveObject;
 
 
     private void OnValidate()
     {
-        switch (reactionType)
-        {
-            case ReactionType.Magnetic:
-                reactionType |= ReactionType.Move;
-                break;
-            case ReactionType.Throw:
-                reactionType |= ReactionType.Move;
-                break;
-        }
         AddObjectComponent();
         ActiveObjectComponent();
     }
@@ -95,6 +88,12 @@ public class SkillReactionObject : MonoBehaviour
         {
             throwableObject = transform.AddComponent<ThrowableObject>();
         }
+
+        explosiveObject = transform.GetComponent<ExplosiveObject>();
+        if( explosiveObject == null)
+        {
+            explosiveObject = transform.AddComponent<ExplosiveObject>();
+        }
     }
 
     void ActiveObjectComponent()
@@ -119,8 +118,16 @@ public class SkillReactionObject : MonoBehaviour
             throwableObject.enabled = true;
         else
             throwableObject.enabled = false;
-    }
 
+        if ((reactionType & ReactionType.Explosion) != 0)
+            explosiveObject.enabled = true;
+        else
+            explosiveObject.enabled = false;
+    }
+    /// <summary>
+    /// /////////////////////////////////////////////////////////////////////////////
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionExit(Collision collision)
     {
         if (magnetReaction)

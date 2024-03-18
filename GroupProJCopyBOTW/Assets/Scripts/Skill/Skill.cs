@@ -26,9 +26,6 @@ public class Skill : RecycleObject
     {
         if (skillController != null)
         {
-            owner.SkillController.startSkill += StartSkill;
-            owner.SkillController.useSkill += UseSkill;
-            owner.SkillController.endSkill += EndSkill;
         }
     }
 
@@ -43,23 +40,27 @@ public class Skill : RecycleObject
         {
             skillController = owner.SkillController;
         }
+        owner.SkillController.startSkill = StartSkillAction;
+        owner.SkillController.useSkill = UseSkillAction;
+        owner.SkillController.endSkill = EndSkillAction;
         originParent = transform.parent;
 
         transform.parent = skillController.SkillRoot;
         transform.position = skillController.SkillRoot.position;
         transform.forward = owner.transform.forward;
+
     }
 
-    protected virtual void StartSkill()
+    protected virtual void StartSkillAction()
     {
     }
 
-    protected virtual void UseSkill()
+    protected virtual void UseSkillAction()
     {
 
     }
 
-    protected virtual void EndSkill()
+    protected virtual void EndSkillAction()
     {
 
     }

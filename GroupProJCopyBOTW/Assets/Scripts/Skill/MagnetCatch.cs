@@ -73,14 +73,14 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void StartSkill()
+    protected override void StartSkillAction()
     {
-        base.StartSkill();
+        base.StartSkillAction();
         StartCoroutine(TargetCheck());
     }
-    protected override void UseSkill()
+    protected override void UseSkillAction()
     {
-        base.UseSkill();
+        base.UseSkillAction();
         StopAllCoroutines();
         if (IsMagnetic && !activatedSkill)
         {
@@ -98,9 +98,9 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void EndSkill()
+    protected override void EndSkillAction()
     {
-        base.EndSkill();
+        base.EndSkillAction();
         if (activatedSkill)
         {
             target.FinishSkillAffect(skillName);
@@ -165,15 +165,15 @@ public class MagnetCatch : Skill
 
     public void TestStartSkill()
     {
-        StartSkill();
+        StartSkillAction();
     }
     public void TestUseSkill()
     {
-        UseSkill();
+        UseSkillAction();
     }
     public void TestFinishSkill()
     {
-        EndSkill();
+        EndSkillAction();
     }
 #endif
 }

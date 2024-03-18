@@ -5,12 +5,10 @@ using UnityEngine;
 public class RemoteBomb : Skill
 {
 
-    public float throwPower = 5.0f;
     public float force = 4.0f;
     public float forceY = 5.0f;
     public float boomRange = 1.2f;
 
-    bool carry = false;
 
 
     Rigidbody rigid;
@@ -22,28 +20,17 @@ public class RemoteBomb : Skill
     protected override void OnEnable()
     {
         base.OnEnable();
-        carry = false;
 
     }
 
-    protected override void StartSkill()
+    protected override void StartSkillAction()
     {
-        base.StartSkill();
-        if (!carry)
-        {
-            carry = true;
-            rigid.isKinematic = true;
-        }
+        base.StartSkillAction();
     }
 
-    protected override void UseSkill()
+    protected override void UseSkillAction()
     {
-        if (carry)
-        {
-            rigid.isKinematic = false;
-            rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
-            carry = false;
-        }
+        
     }
 
     void RemoteOn()
@@ -71,12 +58,12 @@ public class RemoteBomb : Skill
 #if UNITY_EDITOR
     public void TestSkill()
     {
-        StartSkill();
+        StartSkillAction();
     }
 
     public void TestOnSkill()
     {
-        UseSkill();
+        UseSkillAction();
     }
 
     public void TestRemoteOn()

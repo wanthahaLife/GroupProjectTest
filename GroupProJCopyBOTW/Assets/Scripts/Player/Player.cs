@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 {
     public float moveSpeed = 3.0f;
     public float rotateSpeed = 2.0f;
+    public float throwPower = 5.0f;
 
     bool isMoveInput = false;
 
@@ -22,7 +23,11 @@ public class Player : MonoBehaviour
 
     public Action rightClick;
     public Action leftClick;
-    public Action<int> skillSelect;
+    public Action<SkillName> onSkillSelect;
+    public Action onSkill;
+    public Action leftUp;
+    public Action leftDown;
+    public Action<float> onThrow;
 
     readonly int Hash_IsMove = Animator.StringToHash("IsMove");
 
@@ -42,31 +47,153 @@ public class Player : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.RightClick.performed += OnRightClick;
-        inputActions.Player.Skill.performed += OnSkillSelect;
+        inputActions.Player.Skill.performed += OnSkill;
+        inputActions.Player.leftUp.performed += LeftUp;
+        inputActions.Player.leftDown.performed += LeftDown;
+        inputActions.Player.Skill1.performed += OnSkill1;
+        inputActions.Player.Skill2.performed += OnSkill2;
+        inputActions.Player.Skill3.performed += OnSkill3;
+        inputActions.Player.Skill4.performed += OnSkill4;
+        inputActions.Player.Throw.performed += OnThrow;
     }
 
 
     private void OnDisable()
     {
-        inputActions.Player.Skill.performed -= OnSkillSelect;
+        inputActions.Player.Throw.performed -= OnThrow;
+        inputActions.Player.Skill4.performed -= OnSkill4;
+        inputActions.Player.Skill3.performed -= OnSkill3;
+        inputActions.Player.Skill2.performed -= OnSkill2;
+        inputActions.Player.Skill1.performed -= OnSkill1;
+        inputActions.Player.leftDown.performed -= LeftDown;
+        inputActions.Player.leftUp.performed -= LeftUp;
+        inputActions.Player.Skill.performed -= OnSkill;
         inputActions.Player.RightClick.performed -= OnRightClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Disable();
     }
-    private void OnSkillSelect(InputAction.CallbackContext context)
+
+
+    private void OnThrow(InputAction.CallbackContext context)
     {
-        skillSelect?.Invoke(context.ReadValue<int>());
+        onThrow?.Invoke(throwPower);
+    }
+
+    void ThrowObject()
+    {
+        float distance = 2.0f;
+        Ray ray = new Ray(transform.position, transform.forward);
+        Physics.Raycast(ray, out RaycastHit hit ,distance);
+
+
+    }
+
+    private void OnSkill(InputAction.CallbackContext _)
+    {
+        switch (selectSkill)
+        {
+            case SkillName.RemoteBomb:
+                animator.SetBool("Hash_IsThrowStart", true);
+                break;
+        }
+        onSkill?.Invoke();
+    }
+
+    SkillName selectSkill = SkillName.RemoteBomb;
+    SkillName SelectSkill
+    {
+        get => selectSkill;
+        set
+        {
+            if (selectSkill != value)
+            {
+                selectSkill = value;
+                onSkillSelect?.Invoke(selectSkill);
+            }
+            IsSkillMenuOn = false;
+        }
+    }
+
+    readonly int Hash_IsThrowStart = Animator.StringToHash("IsThrowStart");
+    readonly int Hash_Throw = Animator.StringToHash("Throw");
+
+    private void OnSkill1(InputAction.CallbackContext _)
+    {
+        if (isSKillMenuOn)
+        {
+            SelectSkill = SkillName.RemoteBomb;
+        }
+    }
+    private void OnSkill2(InputAction.CallbackContext _)
+    {
+        if (isSKillMenuOn)
+        {
+            SelectSkill = SkillName.MagnetCatch;
+        }
+    }
+    private void OnSkill3(InputAction.CallbackContext _)
+    {
+        if (isSKillMenuOn)
+        {
+            SelectSkill = SkillName.IceMaker;
+        }
+    }
+    private void OnSkill4(InputAction.CallbackContext _)
+    {
+        if (isSKillMenuOn)
+        {
+            SelectSkill = SkillName.TimeLock;
+        }
+    }
+
+    bool isSKillMenuOn = false;
+    bool IsSkillMenuOn
+    {
+        get => isSKillMenuOn;
+        set
+        {
+            isSKillMenuOn = value;
+            if (isSKillMenuOn)
+            {
+                Debug.Log("스킬창 On");
+            }
+            else
+            {
+                Debug.Log("스킬창 Off");
+            }
+        }
+    }
+    private void LeftUp(InputAction.CallbackContext _)
+    {
+        IsSkillMenuOn = !IsSkillMenuOn;
+        leftUp?.Invoke();
+    }
+    private void LeftDown(InputAction.CallbackContext context)
+    {
+        leftDown?.Invoke();
     }
 
     private void OnRightClick(InputAction.CallbackContext _)
     {
+        switch (selectSkill)
+        {
+            case SkillName.RemoteBomb:
+                animator.SetBool("Hash_IsThrowStart", false);
+                break;
+        }
         rightClick?.Invoke();
     }
 
     private void OnLeftClick(InputAction.CallbackContext _)
     {
+        switch (selectSkill)
+        {
+            case SkillName.RemoteBomb:
+                animator.SetTrigger("Hash_Throw");
+                break;
+        }
         leftClick?.Invoke();
     }
 

@@ -9,9 +9,11 @@ public class PlayerSkillController : MonoBehaviour
     public Transform SkillRoot => skillRoot;
     Player player;
 
-    public Action useSkill;
     public Action startSkill;
+    public Action useSkill;
     public Action endSkill;
+
+    SkillName currentSkill = SkillName.RemoteBomb;
 
     private void Awake()
     {
@@ -27,36 +29,36 @@ public class PlayerSkillController : MonoBehaviour
         }
         else
         {
-            /*player.leftClick += StartSkill;
+            player.leftClick += useSkill;
             player.rightClick += endSkill;
-            player.skillSelect += (skillName) => {
-                SkillSelect((SkillName)skillName);
-                useSkill?.Invoke();
-            };*/
-            
+            player.onSkillSelect += (skillName) => currentSkill = skillName;
+            player.onSkill += OnSkill;
         }
     }
 
-    void SkillSelect(SkillName skillName)
+    void OnSkill()
     {
-        switch(skillName)
+        switch(currentSkill)
         {
             case SkillName.RemoteBomb:
                 SkillFactory.Instance.GetRemoteBomb();
                 break;
             case SkillName.MagnetCatch:
+                SkillFactory.Instance.GetMagnetCatch();
                 break;
             case SkillName.IceMaker:
                 break;
             case SkillName.TimeLock: 
                 break;
         }
+        startSkill?.Invoke();
     }
 
 #if UNITY_EDITOR
-    public void TestSkillSelect()
-    {
 
+    void TestSkillSelect(SkillName skillName)
+    {
+        Debug.Log(skillName);
     }
 
 #endif

@@ -18,7 +18,7 @@ public class Test01_Camera : TestBase
     protected override void OnTest3(InputAction.CallbackContext context)
     {
         PlayerSkillController player = GameManager.Instance.Player.SkillController;
-        player.startSkill?.Invoke();
+        //player.startSkill?.Invoke();
     }
     protected override void OnTest4(InputAction.CallbackContext context)
     {

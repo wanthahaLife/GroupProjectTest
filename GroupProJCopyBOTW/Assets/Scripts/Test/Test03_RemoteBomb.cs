@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Test03_RemoteBomb : TestBase
 {
+#if UNITY_EDITOR
     RemoteBomb bomb;
 
     private void Start()
@@ -25,4 +26,5 @@ public class Test03_RemoteBomb : TestBase
     {
         bomb.TestRemoteOn();
     }
+#endif
 }

@@ -6,11 +6,12 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class ObjectController : MonoBehaviour
+public class ObjectEditor : MonoBehaviour
 {
     public float Weight = 1.0f;
     bool carry = false;
 
+#if UNITY_EDITOR
     [Flags]
     public enum ReactionType
     {
@@ -31,10 +32,12 @@ public class ObjectController : MonoBehaviour
     ExplosiveObject explosiveObject;
 
 
-    private void OnValidate()
+    private void OnValidate() => EditorApplication.delayCall += SafeOnValidate;
+
+    private void SafeOnValidate()
     {
         AddObjectComponent();
-        ActiveObjectComponent();
+        RemoveObjectComponent();
     }
 
     bool magnetReaction = false;
@@ -46,7 +49,7 @@ public class ObjectController : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         carry = false;
         AddObjectComponent();
-        ActiveObjectComponent();
+        RemoveObjectComponent();
     }
 
     private void Start()
@@ -96,34 +99,26 @@ public class ObjectController : MonoBehaviour
         }
     }
 
-    void ActiveObjectComponent()
+    void RemoveObjectComponent()
     {
 
-        if ((reactionType & ReactionType.Move) != 0)
-            movableObject.enabled = true;
-        else
-            movableObject.enabled = false;
+        if (movableObject != null && (reactionType & ReactionType.Move) == 0)
+            DestroyImmediate(movableObject);
 
-        if ((reactionType & ReactionType.Destroy) != 0)
-            destructibleObject.enabled = true;
-        else
-            destructibleObject.enabled = false;
+        if (destructibleObject != null && (reactionType & ReactionType.Destroy) == 0)
+            DestroyImmediate(destructibleObject);
+        
+        if (magneticObject != null && (reactionType & ReactionType.Magnetic) == 0)
+            DestroyImmediate(magneticObject);
 
-        if ((reactionType & ReactionType.Magnetic) != 0)
-            magneticObject.enabled = true;
-        else
-            magneticObject.enabled = false;
+        if (throwableObject != null && (reactionType & ReactionType.Throw) == 0)
+            DestroyImmediate(throwableObject);
 
-        if ((reactionType & ReactionType.Throw) != 0)
-            throwableObject.enabled = true;
-        else
-            throwableObject.enabled = false;
-
-        if ((reactionType & ReactionType.Explosion) != 0)
-            explosiveObject.enabled = true;
-        else
-            explosiveObject.enabled = false;
+        if (explosiveObject != null && (reactionType & ReactionType.Explosion) == 0)
+            DestroyImmediate(explosiveObject);
     }
+
+#endif
     /// <summary>
     /// /////////////////////////////////////////////////////////////////////////////
     /// </summary>

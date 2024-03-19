@@ -38,7 +38,7 @@ public class RemoteBomb : Skill
         Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
         foreach(Collider obj in objects)
         {
-            ObjectController skillReactionObj = obj.GetComponent<ObjectController>();
+            ObjectEditor skillReactionObj = obj.GetComponent<ObjectEditor>();
             if(skillReactionObj != null)
             {
                 Vector3 dir = obj.transform.position - transform.position;

@@ -27,7 +27,7 @@ public class MagnetCatch : Skill
     /// </summary>
     Transform destinationX;
 
-    ObjectController target;
+    ObjectEditor target;
     Transform targetTransform;
     Transform targetOriginParent;
     Rigidbody targetRigid;
@@ -120,7 +120,7 @@ public class MagnetCatch : Skill
             targetTransform = hit.transform;
             if (targetTransform != null)
             {
-                target = targetTransform.GetComponent<ObjectController>();
+                target = targetTransform.GetComponent<ObjectEditor>();
                 if (IsMagnetic)
                 {
                     hitPoint = hit.point;

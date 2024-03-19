@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovableObject : ReactionObject
+public class Legacy_MovableObject : Legacy_ReactionObject
 {
     
 

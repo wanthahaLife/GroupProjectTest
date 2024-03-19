@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestructibleObject : ReactionObject
+public class Legacy_DestructibleObject : Legacy_ReactionObject
 {
     public float objectMaxHp = 1.0f;
 

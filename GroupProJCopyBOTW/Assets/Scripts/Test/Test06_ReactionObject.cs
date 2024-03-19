@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class Test06_ReactionObject : TestBase
 {
-    public ExplosiveObject obj;
+    public Legacy_ExplosiveObject obj;
 
     protected override void OnTest1(InputAction.CallbackContext context)
     {

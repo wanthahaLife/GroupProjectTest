@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ThrowableObject : ReactionObject
+public class Legacy_ThrowableObject : Legacy_ReactionObject
 {
     public void ThrowReaction(Vector3 power)
     {

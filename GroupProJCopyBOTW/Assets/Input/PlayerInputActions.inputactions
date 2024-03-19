@@ -33,33 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Skill",
-                    "type": "Button",
-                    "id": "a335b85f-674b-4cc9-9022-9b5c8f6fe94a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "leftUp",
-                    "type": "Button",
-                    "id": "cd3e1531-e95d-42d4-b811-a214215a365b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "leftDown",
-                    "type": "Button",
-                    "id": "9d60e44d-b51f-4399-941b-bf4e161b1088",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Skill1",
                     "type": "Button",
                     "id": "67429e94-6042-4e6c-9f32-87c8087321fc",
@@ -96,9 +69,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Throw",
+                    "name": "SkillMenu",
                     "type": "Button",
-                    "id": "b91e6593-3d09-4440-8c6c-0360449f2d5d",
+                    "id": "767cf14d-c829-48bd-a079-07eabe777f17",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "e6bdab5e-e0a0-4846-bb1a-8a9290b050f6",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -185,17 +167,6 @@
                 },
                 {
                     "name": "",
-                    "id": "f4c579bf-96bc-4e66-9d71-b0da650c82b4",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KM",
-                    "action": "Skill",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "9ae2d480-7cb4-43a0-8f1b-3512969ba425",
                     "path": "<Keyboard>/f1",
                     "interactions": "",
@@ -240,34 +211,23 @@
                 },
                 {
                     "name": "",
-                    "id": "be8033c9-e49b-415e-b854-de30dc1ebbb0",
-                    "path": "<Keyboard>/t",
+                    "id": "f9f36e87-f420-425d-9cda-84231c3f6b54",
+                    "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KM",
-                    "action": "leftUp",
+                    "groups": "",
+                    "action": "SkillMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "330a89d1-757a-494f-ab9d-2dbce1c2231f",
-                    "path": "<Keyboard>/g",
+                    "id": "dd6fd779-203e-4a48-ba39-2a94dd38b951",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KM",
-                    "action": "leftDown",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "fe19cb52-fd42-4d86-bb01-449ae8970794",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KM",
-                    "action": "Throw",
+                    "groups": "",
+                    "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

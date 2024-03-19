@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExplosiveObject : DestructibleObject
+public class Legacy_ExplosiveObject : Legacy_DestructibleObject
 {
     public float force = 4.0f;
     public float forceY = 5.0f;
@@ -23,13 +23,13 @@ public class ExplosiveObject : DestructibleObject
         Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
         foreach (Collider obj in objects)
         {
-            DestructibleObject destructibleObj = obj.GetComponent<DestructibleObject>();
+            Legacy_DestructibleObject destructibleObj = obj.GetComponent<Legacy_DestructibleObject>();
             if (destructibleObj != null)
             {
                 destructibleObj.HitReaction(MaxDestroyDamage);
                 continue;
             }
-            MovableObject movableObj = obj.GetComponent<MovableObject>();
+            Legacy_MovableObject movableObj = obj.GetComponent<Legacy_MovableObject>();
             if(movableObj != null)
             {
                 Vector3 dir = obj.transform.position - transform.position;

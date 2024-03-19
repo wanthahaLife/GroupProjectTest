@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 public class Player : MonoBehaviour
 {
@@ -16,6 +13,7 @@ public class Player : MonoBehaviour
     PlayerInputActions inputActions;
     Vector3 inputDir = Vector3.zero;
     Transform character;
+    Transform skillRoot;
     Animator animator;
 
     PlayerSkillController skillController;
@@ -25,9 +23,6 @@ public class Player : MonoBehaviour
     public Action leftClick;
     public Action<SkillName> onSkillSelect;
     public Action onSkill;
-    public Action leftUp;
-    public Action leftDown;
-    public Action<float> onThrow;
 
     readonly int Hash_IsMove = Animator.StringToHash("IsMove");
 
@@ -37,6 +32,10 @@ public class Player : MonoBehaviour
         character = transform.GetChild(0);
         animator = character.GetComponent<Animator>();
         skillController = transform.GetComponent<PlayerSkillController>();
+
+        skillRoot = transform.GetComponentInChildren<SkillRoot>().transform;
+
+        rightClick += LiftObject;
     }
 
 
@@ -47,27 +46,24 @@ public class Player : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.RightClick.performed += OnRightClick;
-        inputActions.Player.Skill.performed += OnSkill;
-        inputActions.Player.leftUp.performed += LeftUp;
-        inputActions.Player.leftDown.performed += LeftDown;
+        inputActions.Player.SkillMenu.performed += OnSkill;
         inputActions.Player.Skill1.performed += OnSkill1;
         inputActions.Player.Skill2.performed += OnSkill2;
         inputActions.Player.Skill3.performed += OnSkill3;
         inputActions.Player.Skill4.performed += OnSkill4;
-        inputActions.Player.Throw.performed += OnThrow;
+        inputActions.Player.Cancel.performed += OnCancel;
     }
 
+ 
 
     private void OnDisable()
     {
-        inputActions.Player.Throw.performed -= OnThrow;
+        inputActions.Player.Cancel.performed -= OnCancel;
         inputActions.Player.Skill4.performed -= OnSkill4;
         inputActions.Player.Skill3.performed -= OnSkill3;
         inputActions.Player.Skill2.performed -= OnSkill2;
         inputActions.Player.Skill1.performed -= OnSkill1;
-        inputActions.Player.leftDown.performed -= LeftDown;
-        inputActions.Player.leftUp.performed -= LeftUp;
-        inputActions.Player.Skill.performed -= OnSkill;
+        inputActions.Player.SkillMenu.performed -= OnSkill;
         inputActions.Player.RightClick.performed -= OnRightClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
         inputActions.Player.Move.canceled -= OnMove;
@@ -75,10 +71,20 @@ public class Player : MonoBehaviour
         inputActions.Player.Disable();
     }
 
+    public float liftRange = 2.0f;
 
-    private void OnThrow(InputAction.CallbackContext context)
+    void LiftObject()
     {
-        onThrow?.Invoke(throwPower);
+        // if(맨손일때)
+        Ray ray = new Ray(transform.position, transform.forward);
+        if(Physics.Raycast(ray, out RaycastHit hit, liftRange))
+        {
+            ReactionObject reaction = hit.transform.GetComponent<ReactionObject>();
+            if((reaction.Type & ReactionType.Throw) != 0)
+            {
+                reaction.Lift(skillRoot);
+            }
+        }
     }
 
     void ThrowObject()
@@ -147,6 +153,10 @@ public class Player : MonoBehaviour
             SelectSkill = SkillName.TimeLock;
         }
     }
+    private void OnCancel(InputAction.CallbackContext context)
+    {
+        throw new NotImplementedException();
+    }
 
     bool isSKillMenuOn = false;
     bool IsSkillMenuOn
@@ -165,22 +175,14 @@ public class Player : MonoBehaviour
             }
         }
     }
-    private void LeftUp(InputAction.CallbackContext _)
-    {
-        IsSkillMenuOn = !IsSkillMenuOn;
-        leftUp?.Invoke();
-    }
-    private void LeftDown(InputAction.CallbackContext context)
-    {
-        leftDown?.Invoke();
-    }
+
 
     private void OnRightClick(InputAction.CallbackContext _)
     {
         switch (selectSkill)
         {
             case SkillName.RemoteBomb:
-                animator.SetBool("Hash_IsThrowStart", false);
+                //animator.SetBool("Hash_IsThrowStart", false);
                 break;
         }
         rightClick?.Invoke();
@@ -228,4 +230,13 @@ public class Player : MonoBehaviour
         rotate.y = 0;
         transform.forward = rotate;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.forward * liftRange);
+    }
+
+#endif
 }

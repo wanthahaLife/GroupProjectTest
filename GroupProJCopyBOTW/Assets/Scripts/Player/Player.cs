@@ -191,7 +191,7 @@ public class Player : MonoBehaviour
         switch (selectSkill)
         {
             case SkillName.RemoteBomb:
-                animator.SetTrigger("Hash_Throw");
+                //animator.SetTrigger("Hash_Throw");
                 break;
         }
         leftClick?.Invoke();

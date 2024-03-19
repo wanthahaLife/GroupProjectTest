@@ -7,7 +7,7 @@ public class DestructibleObject : ReactionObject
     public float objectMaxHp = 1.0f;
 
     float objectHp;
-    protected float OjbectHp
+    protected float ObjectHp
     {
         get => objectHp;
         set
@@ -21,9 +21,14 @@ public class DestructibleObject : ReactionObject
     }
 
 
+    private void Start()
+    {
+        ObjectHp = objectMaxHp;
+    }
+
     public void HitReaction(float power)
     {
-        objectHp -= power;
+        ObjectHp -= power;
     }
 
     public void HitReaction()
@@ -33,6 +38,7 @@ public class DestructibleObject : ReactionObject
 
     protected virtual void ObjectDestroy()
     {
-
+        Debug.Log("파괴");
+        gameObject.SetActive(false);
     }
 }

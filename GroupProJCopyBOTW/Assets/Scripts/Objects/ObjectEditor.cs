@@ -9,7 +9,7 @@ using UnityEngine;
 public class ObjectEditor : MonoBehaviour
 {
     public float Weight = 1.0f;
-    bool carry = false;
+    //bool carry = false;
 
 #if UNITY_EDITOR
     [Flags]
@@ -30,17 +30,29 @@ public class ObjectEditor : MonoBehaviour
     MagneticObject magneticObject;
     ThrowableObject throwableObject;
     ExplosiveObject explosiveObject;
+    Rigidbody rigid;
 
+
+    private void Start()
+    {
+        
+    }
 
     private void OnValidate() => EditorApplication.delayCall += SafeOnValidate;
 
     private void SafeOnValidate()
     {
+
+        rigid = GetComponent<Rigidbody>();
+        if (rigid == null)
+        {
+            rigid = transform.AddComponent<Rigidbody>();
+        }
         AddObjectComponent();
         RemoveObjectComponent();
     }
 
-    bool magnetReaction = false;
+    /*bool magnetReaction = false;
 
     Rigidbody rigid;
 
@@ -48,8 +60,6 @@ public class ObjectEditor : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         carry = false;
-        AddObjectComponent();
-        RemoveObjectComponent();
     }
 
     private void Start()
@@ -63,37 +73,37 @@ public class ObjectEditor : MonoBehaviour
         {
             Debug.LogWarning("플레이어가 없습니다.");
         }
-    }
+    }*/
 
     void AddObjectComponent()
     {
 
         movableObject = transform.GetComponent<MovableObject>();
-        if (movableObject == null)
+        if (movableObject == null && (reactionType & ReactionType.Move) != 0)
         {
             movableObject = transform.AddComponent<MovableObject>();
         }
 
         destructibleObject = transform.GetComponent<DestructibleObject>();
-        if (destructibleObject == null)
+        if (destructibleObject == null && (reactionType & ReactionType.Destroy) != 0)
         {
             destructibleObject = transform.AddComponent<DestructibleObject>();
         }
 
         magneticObject = transform.GetComponent<MagneticObject>();
-        if (magneticObject == null)
+        if (magneticObject == null && (reactionType & ReactionType.Magnetic) != 0)
         {
             magneticObject = transform.AddComponent<MagneticObject>();
         }
 
         throwableObject = transform.GetComponent<ThrowableObject>();
-        if (throwableObject == null)
+        if (throwableObject == null && (reactionType & ReactionType.Throw) != 0)
         {
             throwableObject = transform.AddComponent<ThrowableObject>();
         }
 
         explosiveObject = transform.GetComponent<ExplosiveObject>();
-        if( explosiveObject == null)
+        if( explosiveObject == null && (reactionType & ReactionType.Explosion) != 0)
         {
             explosiveObject = transform.AddComponent<ExplosiveObject>();
         }
@@ -123,7 +133,7 @@ public class ObjectEditor : MonoBehaviour
     /// /////////////////////////////////////////////////////////////////////////////
     /// </summary>
     /// <param name="collision"></param>
-    private void OnCollisionExit(Collision collision)
+    /*private void OnCollisionExit(Collision collision)
     {
         if (magnetReaction)
         {
@@ -201,5 +211,5 @@ public class ObjectEditor : MonoBehaviour
                 rigid.isKinematic = true;
             }
         }
-    }
+    }*/
 }

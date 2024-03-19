@@ -44,6 +44,7 @@ public class MagnetCatch : Skill
     {
         destinationX = transform.GetChild(0);
         targetGroup = GetComponentInChildren<Cinemachine.CinemachineTargetGroup>();
+        
     }
     protected override void Start()
     {
@@ -92,7 +93,7 @@ public class MagnetCatch : Skill
             //targetOriginParent = targetTransform.parent;
             //targetTransform.parent = destinationX;
             targetRigid = targetTransform.GetComponent<Rigidbody>();
-            target.OnSkillAffect(skillName);
+            //target.OnSkillAffect(skillName);
 
             activatedSkill = true;
         }
@@ -103,7 +104,7 @@ public class MagnetCatch : Skill
         base.EndSkillAction();
         if (activatedSkill)
         {
-            target.FinishSkillAffect(skillName);
+            //target.FinishSkillAffect(skillName);
             target = null;
             activatedSkill = false;
             //targetTransform.parent = targetOriginParent;

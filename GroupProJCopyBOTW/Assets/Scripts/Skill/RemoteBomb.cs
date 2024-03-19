@@ -5,9 +5,6 @@ using UnityEngine;
 public class RemoteBomb : Skill
 {
 
-    public float force = 4.0f;
-    public float forceY = 5.0f;
-    public float boomRange = 1.2f;
 
 
 
@@ -35,17 +32,7 @@ public class RemoteBomb : Skill
 
     void RemoteOn()
     {
-        Collider[] objects = Physics.OverlapSphere(transform.position, boomRange);
-        foreach(Collider obj in objects)
-        {
-            ObjectEditor skillReactionObj = obj.GetComponent<ObjectEditor>();
-            if(skillReactionObj != null)
-            {
-                Vector3 dir = obj.transform.position - transform.position;
-                Vector3 power = dir.normalized * force + obj.transform.up * forceY;
-                skillReactionObj.OnSkillAffect(skillName, power);
-            }
-        }
+        
 
         Boom();
     }
@@ -71,11 +58,7 @@ public class RemoteBomb : Skill
         RemoteOn();
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, boomRange);
-    }
+
 
 #endif
 }

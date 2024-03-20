@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillRootTracker : MonoBehaviour
+public class HandRootTracker : MonoBehaviour
 {
     public void OnTracking(Transform target)
     {
@@ -16,10 +16,9 @@ public class SkillRootTracker : MonoBehaviour
 
     IEnumerator Trakcking(Transform target)
     {
-        Vector3 pos = target.position;
         while (true)
         {
-            transform.position = pos;
+            transform.position = target.position;
             yield return null;
         }
     }

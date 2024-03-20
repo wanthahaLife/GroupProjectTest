@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,13 +18,15 @@ public class Player : MonoBehaviour
     Animator animator;
 
     PlayerSkillController skillController;
-    SkillRootTracker skillRootTracker;
+    HandRootTracker handRootTracker;
     public PlayerSkillController SkillController => skillController;
 
     public Action rightClick;
     public Action leftClick;
     public Action<SkillName> onSkillSelect;
     public Action onSkill;
+    Action onThrow;
+    public Action onPickUp;
 
     SkillName selectSkill = SkillName.RemoteBomb;
     SkillName SelectSkill
@@ -34,9 +37,9 @@ public class Player : MonoBehaviour
             if (selectSkill != value)
             {
                 selectSkill = value;
+                Debug.Log($"스킬 [{selectSkill}]로 설정");
                 onSkillSelect?.Invoke(selectSkill);
             }
-            IsSkillMenuOn = false;
         }
     }
 
@@ -51,20 +54,19 @@ public class Player : MonoBehaviour
         animator = character.GetComponent<Animator>();
         skillController = transform.GetComponent<PlayerSkillController>();
 
-        Transform skillRoot = transform.GetComponentInChildren<SkillRoot>().transform;
-
-        skillRootTracker = transform.GetComponentInChildren<SkillRootTracker>();
-        skillController.startSkill += () => skillRootTracker.OnTracking(skillRoot);
-        skillController.endSkill += skillRootTracker.OffTracking;
+        handRootTracker = transform.GetComponentInChildren<HandRootTracker>();
+        HandRoot handRoot = transform.GetComponentInChildren<HandRoot>();
 
         pickUpRoot = transform.GetChild(2);
-
-        rightClick += PickUpObject;
-
         pickUpPoint = pickUpRoot.position;
         pickUpPoint.y += pickUpHeightRange;
 
-        leftClick += ThrowObject;
+        leftClick += PickUpObject;
+        rightClick += DropObject;
+        onThrow += ThrowObject;
+
+        onPickUp += () => handRootTracker.OnTracking(handRoot.transform);
+        rightClick += handRootTracker.OffTracking;
     }
 
 
@@ -73,28 +75,34 @@ public class Player : MonoBehaviour
         inputActions.Player.Enable();
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
+
         inputActions.Player.LeftClick.performed += OnLeftClick;
         inputActions.Player.RightClick.performed += OnRightClick;
-        inputActions.Player.SkillMenu.performed += OnSkill;
+
+        inputActions.Player.OnSkill.performed += OnSkill;
         inputActions.Player.Skill1.performed += OnSkill1;
         inputActions.Player.Skill2.performed += OnSkill2;
         inputActions.Player.Skill3.performed += OnSkill3;
         inputActions.Player.Skill4.performed += OnSkill4;
-        inputActions.Player.Cancel.performed += OnCancel;
+        inputActions.Player.Skill5.performed += OnSkill5;
+
+        inputActions.Player.Throw.performed += OnThrow;
     }
 
- 
+
 
     private void OnDisable()
     {
-        inputActions.Player.Cancel.performed -= OnCancel;
+        inputActions.Player.Skill5.performed -= OnSkill5;
         inputActions.Player.Skill4.performed -= OnSkill4;
         inputActions.Player.Skill3.performed -= OnSkill3;
         inputActions.Player.Skill2.performed -= OnSkill2;
         inputActions.Player.Skill1.performed -= OnSkill1;
-        inputActions.Player.SkillMenu.performed -= OnSkill;
+        inputActions.Player.OnSkill.performed -= OnSkill;
+
         inputActions.Player.RightClick.performed -= OnRightClick;
         inputActions.Player.LeftClick.performed -= OnLeftClick;
+
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Disable();
@@ -122,12 +130,12 @@ public class Player : MonoBehaviour
             Collider[] hit = Physics.OverlapCapsule(pickUpRoot.position, pickUpPoint, liftRadius);
             for(int i = 0; i < hit.Length; i++)
             {
-                skillController.startSkill?.Invoke();
                 reaction = hit[i].transform.GetComponent<ReactionObject>();
                 if (reaction != null && (reaction.Type & ReactionType.Throw) != 0)
                 {
                     IsPickUp = true;
-                    reaction.PickUp(skillRootTracker.transform);
+                    onPickUp?.Invoke();
+                    reaction.PickUp(handRootTracker.transform);
                     reaction.transform.rotation = Quaternion.identity;
                     break;
                 }
@@ -139,9 +147,18 @@ public class Player : MonoBehaviour
     {
         if (IsPickUp && reaction != null)
         {
+            animator.SetTrigger(Hash_Throw);
             reaction.Throw(throwPower, transform);
             IsPickUp = false;
             reaction = null;
+        }
+    }
+    void DropObject()
+    {
+        if (IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
+        {
+            IsPickUp = false;
+            reaction.Drop();
         }
     }
 
@@ -150,64 +167,47 @@ public class Player : MonoBehaviour
         switch (selectSkill)
         {
             case SkillName.RemoteBomb:
-                animator.SetBool("Hash_IsThrowStart", true);
+                //animator.SetBool("Hash_IsThrowStart", true);
                 break;
         }
         onSkill?.Invoke();
     }
 
-
     private void OnSkill1(InputAction.CallbackContext _)
     {
-        if (isSKillMenuOn)
+        //if (isSKillMenuOn)
         {
             SelectSkill = SkillName.RemoteBomb;
         }
     }
     private void OnSkill2(InputAction.CallbackContext _)
     {
-        if (isSKillMenuOn)
+        //if (isSKillMenuOn)
         {
-            SelectSkill = SkillName.MagnetCatch;
+            SelectSkill = SkillName.RemoteBomb_Cube;
         }
     }
     private void OnSkill3(InputAction.CallbackContext _)
     {
-        if (isSKillMenuOn)
+        //if (isSKillMenuOn)
         {
-            SelectSkill = SkillName.IceMaker;
+            SelectSkill = SkillName.MagnetCatch;
         }
     }
     private void OnSkill4(InputAction.CallbackContext _)
     {
-        if (isSKillMenuOn)
+        //if (isSKillMenuOn)
+        {
+            SelectSkill = SkillName.IceMaker;
+        }
+    }
+    private void OnSkill5(InputAction.CallbackContext context)
+    {
+        //if (isSKillMenuOn)
         {
             SelectSkill = SkillName.TimeLock;
         }
     }
-    private void OnCancel(InputAction.CallbackContext context)
-    {
-        throw new NotImplementedException();
-    }
-
-    bool isSKillMenuOn = false;
-    bool IsSkillMenuOn
-    {
-        get => isSKillMenuOn;
-        set
-        {
-            isSKillMenuOn = value;
-            if (isSKillMenuOn)
-            {
-                Debug.Log("스킬창 On");
-            }
-            else
-            {
-                Debug.Log("스킬창 Off");
-            }
-        }
-    }
-
 
     private void OnRightClick(InputAction.CallbackContext _)
     {
@@ -230,7 +230,10 @@ public class Player : MonoBehaviour
         }
         leftClick?.Invoke();
     }
-
+    private void OnThrow(InputAction.CallbackContext context)
+    {
+        onThrow?.Invoke();
+    }
     private void OnMove(InputAction.CallbackContext context)
     {
         Vector3 tempDir = context.ReadValue<Vector2>();

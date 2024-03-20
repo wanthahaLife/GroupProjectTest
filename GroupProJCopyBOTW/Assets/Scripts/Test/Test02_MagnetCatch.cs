@@ -14,17 +14,17 @@ public class Test02_MagnetCatch : TestBase
     }
     protected override void OnTest1(InputAction.CallbackContext context)
     {
-        player.SkillController.startSkill?.Invoke();
+        //player.SkillController.startSkill?.Invoke();
     }
 
     protected override void OnTest2(InputAction.CallbackContext context)
     {
-        player.SkillController.useSkill?.Invoke();
+        player.SkillController.usingSkill?.Invoke();
     }
 
     protected override void OnTest3(InputAction.CallbackContext context)
     {
-        player.SkillController.endSkill?.Invoke();
+        player.SkillController.cancelSkill?.Invoke();
     }
 
 }

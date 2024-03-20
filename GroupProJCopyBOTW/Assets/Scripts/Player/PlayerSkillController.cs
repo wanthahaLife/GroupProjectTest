@@ -9,15 +9,14 @@ public class PlayerSkillController : MonoBehaviour
     public Transform SkillRoot => skillRoot;
     Player player;
 
-    public Action startSkill;
-    public Action useSkill;
-    public Action endSkill;
+    public Action usingSkill;
+    public Action cancelSkill;
 
     SkillName currentSkill = SkillName.RemoteBomb;
 
     private void Awake()
     {
-        skillRoot = GetComponentInChildren<SkillRoot>().transform;
+        skillRoot = GetComponentInChildren<HandRoot>().transform;
     }
 
     private void Start()
@@ -29,10 +28,12 @@ public class PlayerSkillController : MonoBehaviour
         }
         else
         {
-            player.leftClick += useSkill;
-            player.rightClick += endSkill;
+            HandRootTracker handRootTracker = GetComponentInChildren<HandRootTracker>();
+
             player.onSkillSelect += (skillName) => currentSkill = skillName;
             player.onSkill += OnSkill;
+            player.onSkill += () => handRootTracker.OnTracking(skillRoot);
+            cancelSkill += handRootTracker.OffTracking;
         }
     }
 
@@ -51,7 +52,7 @@ public class PlayerSkillController : MonoBehaviour
             case SkillName.TimeLock: 
                 break;
         }
-        startSkill?.Invoke();
+        //startSkill?.Invoke();
     }
 
 #if UNITY_EDITOR

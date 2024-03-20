@@ -4,10 +4,10 @@ using UnityEngine;
 public enum SkillName
 {
     RemoteBomb = 1,
-    RemoteBomb_Cube = 1,
-    MagnetCatch = 2,
-    TimeLock = 3,
-    IceMaker = 4
+    RemoteBomb_Cube = 2,
+    MagnetCatch = 3,
+    TimeLock = 4,
+    IceMaker = 5
 }
 
 public class Skill : RecycleObject
@@ -40,9 +40,9 @@ public class Skill : RecycleObject
         {
             skillController = owner.SkillController;
         }
-        owner.SkillController.startSkill = StartSkillAction;
-        owner.SkillController.useSkill = UseSkillAction;
-        owner.SkillController.endSkill = EndSkillAction;
+        /*owner.SkillController.startSkill = StartSkillAction;
+        owner.SkillController.usingSkill = UseSkillAction;
+        owner.SkillController.cancelSkill = EndSkillAction;*/
         originParent = transform.parent;
 
         transform.parent = skillController.SkillRoot;

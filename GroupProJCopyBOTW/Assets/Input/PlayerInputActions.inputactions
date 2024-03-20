@@ -69,7 +69,16 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SkillMenu",
+                    "name": "Skill5",
+                    "type": "Button",
+                    "id": "941ced48-7b9d-43b7-bd3a-8849a982b6ce",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OnSkill",
                     "type": "Button",
                     "id": "767cf14d-c829-48bd-a079-07eabe777f17",
                     "expectedControlType": "Button",
@@ -78,7 +87,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Cancel",
+                    "name": "Throw",
                     "type": "Button",
                     "id": "e6bdab5e-e0a0-4846-bb1a-8a9290b050f6",
                     "expectedControlType": "Button",
@@ -212,22 +221,33 @@
                 {
                     "name": "",
                     "id": "f9f36e87-f420-425d-9cda-84231c3f6b54",
-                    "path": "",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "SkillMenu",
+                    "groups": "KM",
+                    "action": "OnSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "dd6fd779-203e-4a48-ba39-2a94dd38b951",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Cancel",
+                    "action": "Throw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8c30538-67e5-46d8-982a-5c21cbae9066",
+                    "path": "<Keyboard>/f5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KM",
+                    "action": "Skill5",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

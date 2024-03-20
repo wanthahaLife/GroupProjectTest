@@ -13,11 +13,11 @@ public class Player : MonoBehaviour
     PlayerInputActions inputActions;
     Vector3 inputDir = Vector3.zero;
     Transform character;
-    Transform skillRoot;
     Transform pickUpRoot;
     Animator animator;
 
     PlayerSkillController skillController;
+    SkillRootTracker skillRootTracker;
     public PlayerSkillController SkillController => skillController;
 
     public Action rightClick;
@@ -51,7 +51,11 @@ public class Player : MonoBehaviour
         animator = character.GetComponent<Animator>();
         skillController = transform.GetComponent<PlayerSkillController>();
 
-        skillRoot = transform.GetComponentInChildren<SkillRoot>().transform;
+        Transform skillRoot = transform.GetComponentInChildren<SkillRoot>().transform;
+
+        skillRootTracker = transform.GetComponentInChildren<SkillRootTracker>();
+        skillController.startSkill += () => skillRootTracker.OnTracking(skillRoot);
+        skillController.endSkill += skillRootTracker.OffTracking;
 
         pickUpRoot = transform.GetChild(2);
 
@@ -118,11 +122,13 @@ public class Player : MonoBehaviour
             Collider[] hit = Physics.OverlapCapsule(pickUpRoot.position, pickUpPoint, liftRadius);
             for(int i = 0; i < hit.Length; i++)
             {
+                skillController.startSkill?.Invoke();
                 reaction = hit[i].transform.GetComponent<ReactionObject>();
                 if (reaction != null && (reaction.Type & ReactionType.Throw) != 0)
                 {
                     IsPickUp = true;
-                    reaction.PickUp(skillRoot);
+                    reaction.PickUp(skillRootTracker.transform);
+                    reaction.transform.rotation = Quaternion.identity;
                     break;
                 }
             }

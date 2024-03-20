@@ -89,12 +89,8 @@ public class ReactionObject : RecycleObject
         {
             transform.parent = root;
             Vector3 destPos = root.position;
-            destPos.y += transform.lossyScale.y;
-            
-            transform.rotation = Quaternion.identity;
-            rigid.constraints = RigidbodyConstraints.FreezeRotation;
 
-            transform.up = destPos;
+            transform.position = destPos;
             isCarried = true;
             rigid.isKinematic = true;
         }

@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     Vector3 inputDir = Vector3.zero;
     Transform character;
     Transform skillRoot;
+    Transform pickUpRoot;
     Animator animator;
 
     PlayerSkillController skillController;
@@ -24,7 +25,24 @@ public class Player : MonoBehaviour
     public Action<SkillName> onSkillSelect;
     public Action onSkill;
 
+    SkillName selectSkill = SkillName.RemoteBomb;
+    SkillName SelectSkill
+    {
+        get => selectSkill;
+        set
+        {
+            if (selectSkill != value)
+            {
+                selectSkill = value;
+                onSkillSelect?.Invoke(selectSkill);
+            }
+            IsSkillMenuOn = false;
+        }
+    }
+
     readonly int Hash_IsMove = Animator.StringToHash("IsMove");
+    readonly int Hash_IsPickUp = Animator.StringToHash("IsPickUp");
+    readonly int Hash_Throw = Animator.StringToHash("Throw");
 
     private void Awake()
     {
@@ -35,7 +53,14 @@ public class Player : MonoBehaviour
 
         skillRoot = transform.GetComponentInChildren<SkillRoot>().transform;
 
-        rightClick += LiftObject;
+        pickUpRoot = transform.GetChild(2);
+
+        rightClick += PickUpObject;
+
+        pickUpPoint = pickUpRoot.position;
+        pickUpPoint.y += pickUpHeightRange;
+
+        leftClick += ThrowObject;
     }
 
 
@@ -71,29 +96,47 @@ public class Player : MonoBehaviour
         inputActions.Player.Disable();
     }
 
-    public float liftRange = 2.0f;
-
-    void LiftObject()
+    public float liftRadius = 0.5f;
+    public float pickUpHeightRange = 0.5f;
+    Vector3 pickUpPoint = Vector3.zero;
+    bool isPickUp = false;
+    bool IsPickUp
     {
-        // if(맨손일때)
-        Ray ray = new Ray(transform.position, transform.forward);
-        if(Physics.Raycast(ray, out RaycastHit hit, liftRange))
+        get => isPickUp;
+        set
         {
-            ReactionObject reaction = hit.transform.GetComponent<ReactionObject>();
-            if((reaction.Type & ReactionType.Throw) != 0)
+            isPickUp = value;
+            animator.SetBool(Hash_IsPickUp, isPickUp);
+        }
+    }
+    ReactionObject reaction;
+
+    void PickUpObject()
+    {
+        if (!IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
+        {
+            Collider[] hit = Physics.OverlapCapsule(pickUpRoot.position, pickUpPoint, liftRadius);
+            for(int i = 0; i < hit.Length; i++)
             {
-                reaction.Lift(skillRoot);
+                reaction = hit[i].transform.GetComponent<ReactionObject>();
+                if (reaction != null && (reaction.Type & ReactionType.Throw) != 0)
+                {
+                    IsPickUp = true;
+                    reaction.PickUp(skillRoot);
+                    break;
+                }
             }
         }
     }
 
     void ThrowObject()
     {
-        float distance = 2.0f;
-        Ray ray = new Ray(transform.position, transform.forward);
-        Physics.Raycast(ray, out RaycastHit hit ,distance);
-
-
+        if (IsPickUp && reaction != null)
+        {
+            reaction.Throw(throwPower, transform);
+            IsPickUp = false;
+            reaction = null;
+        }
     }
 
     private void OnSkill(InputAction.CallbackContext _)
@@ -107,23 +150,6 @@ public class Player : MonoBehaviour
         onSkill?.Invoke();
     }
 
-    SkillName selectSkill = SkillName.RemoteBomb;
-    SkillName SelectSkill
-    {
-        get => selectSkill;
-        set
-        {
-            if (selectSkill != value)
-            {
-                selectSkill = value;
-                onSkillSelect?.Invoke(selectSkill);
-            }
-            IsSkillMenuOn = false;
-        }
-    }
-
-    readonly int Hash_IsThrowStart = Animator.StringToHash("IsThrowStart");
-    readonly int Hash_Throw = Animator.StringToHash("Throw");
 
     private void OnSkill1(InputAction.CallbackContext _)
     {
@@ -235,7 +261,7 @@ public class Player : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.forward * liftRange);
+        Gizmos.DrawRay(transform.position, transform.forward);
     }
 
 #endif

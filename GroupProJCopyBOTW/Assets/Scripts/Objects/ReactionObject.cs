@@ -25,7 +25,7 @@ public class ReactionObject : RecycleObject
     public float Weight = 1.0f;
     float reducePower = 1.0f;
 
-    bool isCarry = false;
+    bool isCarried = false;
 
     public ReactionType reactionType;
     public ReactionType Type => reactionType;
@@ -46,8 +46,9 @@ public class ReactionObject : RecycleObject
         {
             rigid = transform.AddComponent<Rigidbody>();
         }
-        isCarry = false;
+        isCarried = false;
         originParent = transform.parent;
+        reducePower = 1.0f / Weight;
     }
 
     private void Start()
@@ -82,24 +83,34 @@ public class ReactionObject : RecycleObject
         }
     }
 
-    public void Lift(Transform root)
+    public void PickUp(Transform root)
     {
         if ((reactionType & ReactionType.Throw) != 0)
         {
             transform.parent = root;
-            transform.position = root.position;
-            isCarry = true;
+            Vector3 destPos = root.position;
+            destPos.y += transform.lossyScale.y;
+            
+            transform.rotation = Quaternion.identity;
+            rigid.constraints = RigidbodyConstraints.FreezeRotation;
+
+            transform.up = destPos;
+            isCarried = true;
             rigid.isKinematic = true;
         }
     }
 
     public void Throw(float throwPower, Transform user)
     {
-        if ((reactionType & ReactionType.Throw) != 0 && isCarry)
+        if ((reactionType & ReactionType.Throw) != 0 && isCarried)
         {
-            rigid.AddRelativeForce((user.forward + user.up) * throwPower, ForceMode.Impulse);
-            isCarry = false;
+            isCarried = false;
             rigid.isKinematic = false;
+            rigid.constraints = RigidbodyConstraints.None;
+
+            rigid.AddForce((user.forward + user.up) * throwPower, ForceMode.Impulse);
+            //rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
+            transform.parent = originParent;
         }
     }
 
@@ -108,7 +119,7 @@ public class ReactionObject : RecycleObject
         if ((reactionType & ReactionType.Throw) != 0)
         {
             transform.parent = originParent;
-            isCarry = true;
+            isCarried = true;
             rigid.isKinematic = false;
         }
     }

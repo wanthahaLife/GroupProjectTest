@@ -20,15 +20,55 @@ public enum ReactionType
 [RequireComponent(typeof(Rigidbody))]
 public class ReactionObject : RecycleObject
 {
-    public ExplosiveObject explosiveInfo;
+    [SerializeField] ExplosiveObject explosiveInfo;
 
     public float Weight = 1.0f;
     float reducePower = 1.0f;
+    public float objectMaxHp = 1.0f;
 
-    bool isCarried = false;
+    float objectHp;
+    protected float ObjectHp
+    {
+        get => objectHp;
+        set
+        {
+            objectHp = value;
+            if (objectHp < 0.0f)
+            {
+                DestroyReaction();
+            }
+        }
+    }
+    enum StateType
+    {
+        None = 0,
+        PickUp,
+        Throw,
+        Move,
+        Destroy,
+        Boom,
+        Magnet
+    }
+
+    StateType currentState = StateType.None;
+
+    //bool isCarried = false;
+    //bool isThrow = false;
 
     public ReactionType reactionType;
-    public ReactionType Type => reactionType;
+    public ReactionType Type
+    {
+        get => reactionType;
+        set
+        {
+            reactionType = value;
+            if ((reactionType & ReactionType.Explosion) != 0)
+            {
+                reactionType |= ReactionType.Destroy;
+            }
+        }
+    }
+
 
     const float MaxDestroyDamage = 1000.0f;
 
@@ -46,9 +86,21 @@ public class ReactionObject : RecycleObject
         {
             rigid = transform.AddComponent<Rigidbody>();
         }
-        isCarried = false;
         originParent = transform.parent;
         reducePower = 1.0f / Weight;
+        ObjectHp = objectMaxHp;
+        
+        if(Type == ReactionType.Explosion)
+        {
+            Type |= ReactionType.Destroy;
+        }
+        //isCarried = false;
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        currentState = StateType.None;
     }
 
     private void Start()
@@ -65,6 +117,13 @@ public class ReactionObject : RecycleObject
     }
 
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if((reactionType & ReactionType.Explosion) != 0 && currentState == StateType.Throw) // isThrow)
+        {
+            DestroyReaction();
+        }
+    }
 
     private void OnCollisionExit(Collision collision)
     {
@@ -75,7 +134,56 @@ public class ReactionObject : RecycleObject
         }
     }
 
-    public void Explosion(Vector3 power)
+    public void HitReaction(bool isExplosion = false)
+    {
+        if (isExplosion)
+        {
+            HitReaction(objectMaxHp);
+        }
+        else
+        {
+            HitReaction(1.0f);
+        }
+    }
+
+    public void HitReaction(float power)
+    {
+        if ((reactionType & ReactionType.Destroy) != 0)
+        {
+            ObjectHp -= power;
+        }
+    }
+
+    void DestroyReaction()
+    {
+         Boom();    
+         // -- 파괴 동작 코루틴 추가해야됨
+         gameObject.SetActive(false);
+    }
+
+    void Boom()
+    {
+        if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
+        {   
+            currentState = StateType.Boom;
+            // -- 폭발 동작 코루틴 추가해야됨
+            Collider[] objects = Physics.OverlapSphere(transform.position, explosiveInfo.boomRange);
+            foreach (Collider obj in objects)
+            {
+                // 밑에 수정
+                ReactionObject reactionObj = obj.GetComponent<ReactionObject>();
+                if (reactionObj != null)
+                {
+                    reactionObj.HitReaction(MaxDestroyDamage);
+                    Vector3 dir = obj.transform.position - transform.position;
+                    Vector3 power = dir.normalized * explosiveInfo.force + obj.transform.up * explosiveInfo.forceY;
+                    reactionObj.ExplosionReaction(power);
+                }
+            }
+        }
+    }
+
+    public void ExplosionReaction(Vector3 power)
     {
         if ((reactionType & ReactionType.Move) != 0)
         {
@@ -85,24 +193,26 @@ public class ReactionObject : RecycleObject
 
     public void PickUp(Transform root)
     {
-        if ((reactionType & ReactionType.Throw) != 0)
+        if ((reactionType & ReactionType.Throw) != 0 && currentState != StateType.PickUp)
         {
             transform.parent = root;
             Vector3 destPos = root.position;
 
             transform.position = destPos;
-            isCarried = true;
+            //isCarried = true;
+            currentState = StateType.PickUp;
             rigid.isKinematic = true;
         }
     }
 
     public void Throw(float throwPower, Transform user)
     {
-        if ((reactionType & ReactionType.Throw) != 0 && isCarried)
+        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.PickUp)
         {
-            isCarried = false;
             rigid.isKinematic = false;
-            rigid.constraints = RigidbodyConstraints.None;
+            //isCarried = false;
+            //isThrow = true;
+            currentState = StateType.Throw;
 
             rigid.AddForce((user.forward + user.up) * throwPower, ForceMode.Impulse);
             //rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
@@ -115,10 +225,31 @@ public class ReactionObject : RecycleObject
         if ((reactionType & ReactionType.Throw) != 0)
         {
             transform.parent = originParent;
-            isCarried = true;
+            //isCarried = true;
+            currentState = StateType.None;
             rigid.isKinematic = false;
         }
     }
+
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        if ((reactionType & ReactionType.Explosion) != 0)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, explosiveInfo.boomRange);
+        }
+    }
+
+    private void OnValidate()
+    {
+        if(Type == ReactionType.Explosion)
+        {
+            Type |= ReactionType.Destroy;
+        }
+    }
+#endif
 
 }
 

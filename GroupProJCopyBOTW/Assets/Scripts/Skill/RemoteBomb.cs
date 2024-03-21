@@ -1,48 +1,207 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RemoteBomb : Skill
 {
+    [SerializeField] ExplosiveObject explosiveInfo;
 
+    public float Weight = 1.0f;
+    float reducePower = 1.0f;
 
+    enum StateType
+    {
+        None = 0,
+        PickUp,
+        Throw,
+        Move,
+        Destroy,
+        Boom,
+    }
 
+    StateType currentState = StateType.None;
+
+    //bool isCarried = false;
+    //bool isThrow = false;
+
+    ReactionType reactionType;
+  
+    const float MaxDestroyDamage = 1000.0f;
+
+    Transform originParent;
 
     Rigidbody rigid;
+
+
+    bool magnetReaction = false;
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
+        if (rigid == null)
+        {
+            rigid = transform.AddComponent<Rigidbody>();
+        }
+        originParent = transform.parent;
+        reducePower = 1.0f / Weight;
+
+        reactionType = ReactionType.Move | ReactionType.Throw | ReactionType.Destroy | ReactionType.Explosion;
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
-
+        currentState = StateType.None;
     }
 
-    protected override void StartSkillAction()
+    private void Start()
     {
-        base.StartSkillAction();
+        Player player = GameManager.Instance.Player;
+        if (player != null)
+        {
+            //    player.onThrow += Throw;
+        }
+        else
+        {
+            Debug.LogWarning("플레이어가 없습니다.");
+        }
     }
 
-    protected override void UseSkillAction()
+
+    private void OnCollisionEnter(Collision collision)
     {
-        
+        if ((reactionType & ReactionType.Explosion) != 0 && currentState == StateType.Throw) // isThrow)
+        {
+            DestroyReaction();
+        }
     }
 
-    void RemoteOn()
+    private void OnCollisionExit(Collision collision)
     {
-        
+        if (magnetReaction)
+        {
+            rigid.velocity = Vector3.zero;
+            rigid.angularVelocity = Vector3.zero;
+        }
+    }
 
+    public void HitReaction(bool isExplosion = false)
+    {
+        if (isExplosion)
+        {
+            HitReaction(objectMaxHp);
+        }
+        else
+        {
+            HitReaction(1.0f);
+        }
+    }
+
+    public void HitReaction(float power)
+    {
+        if ((reactionType & ReactionType.Destroy) != 0)
+        {
+            ObjectHp -= power;
+        }
+    }
+
+    void DestroyReaction()
+    {
         Boom();
+        // -- 파괴 동작 코루틴 추가해야됨
+        gameObject.SetActive(false);
     }
 
     void Boom()
     {
-        gameObject.SetActive(false);
+        if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
+        {
+            currentState = StateType.Boom;
+            // -- 폭발 동작 코루틴 추가해야됨
+            Collider[] objects = Physics.OverlapSphere(transform.position, explosiveInfo.boomRange);
+            foreach (Collider obj in objects)
+            {
+                // 밑에 수정
+                ReactionObject reactionObj = obj.GetComponent<ReactionObject>();
+                if (reactionObj != null)
+                {
+                    reactionObj.HitReaction(MaxDestroyDamage);
+                    Vector3 dir = obj.transform.position - transform.position;
+                    Vector3 power = dir.normalized * explosiveInfo.force + obj.transform.up * explosiveInfo.forceY;
+                    reactionObj.ExplosionReaction(power);
+                }
+            }
+        }
     }
 
+    public void ExplosionReaction(Vector3 power)
+    {
+        if ((reactionType & ReactionType.Move) != 0)
+        {
+            rigid.AddForce(power * reducePower, ForceMode.Impulse);
+        }
+    }
+
+    public void PickUp(Transform root)
+    {
+        if ((reactionType & ReactionType.Throw) != 0 && currentState != StateType.PickUp)
+        {
+            transform.parent = root;
+            Vector3 destPos = root.position;
+
+            transform.position = destPos;
+            //isCarried = true;
+            currentState = StateType.PickUp;
+            rigid.isKinematic = true;
+        }
+    }
+
+    public void Throw(float throwPower, Transform user)
+    {
+        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.PickUp)
+        {
+            rigid.isKinematic = false;
+            //isCarried = false;
+            //isThrow = true;
+            currentState = StateType.Throw;
+
+            rigid.AddForce((user.forward + user.up) * throwPower, ForceMode.Impulse);
+            //rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
+            transform.parent = originParent;
+        }
+    }
+
+    public void Drop()
+    {
+        if ((reactionType & ReactionType.Throw) != 0)
+        {
+            transform.parent = originParent;
+            //isCarried = true;
+            currentState = StateType.None;
+            rigid.isKinematic = false;
+        }
+    }
+
+
 #if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        if ((reactionType & ReactionType.Explosion) != 0)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, explosiveInfo.boomRange);
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (Type == ReactionType.Explosion)
+        {
+            Type |= ReactionType.Destroy;
+        }
+    }
+
     public void TestSkill()
     {
         StartSkillAction();
@@ -55,7 +214,7 @@ public class RemoteBomb : Skill
 
     public void TestRemoteOn()
     {
-        RemoteOn();
+        //RemoteOn();
     }
 
 

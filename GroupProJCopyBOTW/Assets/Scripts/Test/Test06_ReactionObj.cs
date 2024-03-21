@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
-public class Test06_ReactionObjThrow : TestBase
+public class Test06_ReactionObj : TestBase
 {
     public ReactionObject obj;
 
@@ -13,4 +13,11 @@ public class Test06_ReactionObjThrow : TestBase
         obj.PickUp(transform);
         obj.Throw(3.0f, transform);
     }
+
+    protected override void OnTest2(InputAction.CallbackContext context)
+    {
+        obj.HitReaction(10);
+    }
+
+
 }

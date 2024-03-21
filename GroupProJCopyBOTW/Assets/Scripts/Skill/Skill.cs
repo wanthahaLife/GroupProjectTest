@@ -14,20 +14,13 @@ public class Skill : RecycleObject
 {
     public SkillName skillName = SkillName.RemoteBomb;
     public float coolTime = 1.0f;
+    public float CoolTime => coolTime;
     protected float currCoolTime = 0.0f;
+    public float CurrentCoolTime => currCoolTime;
     public bool canUse = false;
 
     protected Player owner;
     protected Transform originParent = null;
-    protected PlayerSkillController skillController;
-
-
-    protected virtual void Start()
-    {
-        if (skillController != null)
-        {
-        }
-    }
 
     protected override void OnEnable()
     {
@@ -36,22 +29,20 @@ public class Skill : RecycleObject
         {
             owner = GameManager.Instance.Player;
         }
-        if(skillController == null)
-        {
-            skillController = owner.SkillController;
-        }
-        /*owner.SkillController.startSkill = StartSkillAction;
-        owner.SkillController.usingSkill = UseSkillAction;
-        owner.SkillController.cancelSkill = EndSkillAction;*/
+
+        owner.SkillController.onSKillAction = OnSkillAction;
+        owner.SkillController.useSkillAction = UseSkillAction;
+        owner.SkillController.offSkillAction = OffSkillAction;
+
         originParent = transform.parent;
 
-        transform.parent = skillController.SkillRoot;
-        transform.position = skillController.SkillRoot.position;
+        transform.parent = owner.SkillController.HandRoot;
+        transform.position = owner.SkillController.HandRoot.position;
         transform.forward = owner.transform.forward;
 
     }
 
-    protected virtual void StartSkillAction()
+    protected virtual void OnSkillAction()
     {
     }
 
@@ -60,7 +51,7 @@ public class Skill : RecycleObject
 
     }
 
-    protected virtual void EndSkillAction()
+    protected virtual void OffSkillAction()
     {
 
     }

@@ -46,7 +46,7 @@ public class MagnetCatch : Skill
         targetGroup = GetComponentInChildren<Cinemachine.CinemachineTargetGroup>();
         
     }
-    protected override void Start()
+    /*protected override void Start()
     {
         base.Start();
         if (vcam == null)
@@ -54,7 +54,7 @@ public class MagnetCatch : Skill
             vcam = GameManager.Instance.PlayerCam;
         }
         vcam.onMouseMove += CameraMove;
-    }
+    }*/
 
     protected override void OnEnable()
     {
@@ -74,10 +74,11 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void StartSkillAction()
+    protected override void OnSkillAction()
     {
-        base.StartSkillAction();
-        StartCoroutine(TargetCheck());
+        base.OnSkillAction();
+        Debug.Log("마그넷");
+        //StartCoroutine(TargetCheck());
     }
     protected override void UseSkillAction()
     {
@@ -99,9 +100,9 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void EndSkillAction()
+    protected override void OffSkillAction()
     {
-        base.EndSkillAction();
+        base.OffSkillAction();
         if (activatedSkill)
         {
             //target.FinishSkillAffect(skillName);
@@ -166,7 +167,7 @@ public class MagnetCatch : Skill
 
     public void TestStartSkill()
     {
-        StartSkillAction();
+        OnSkillAction();
     }
     public void TestUseSkill()
     {
@@ -174,7 +175,7 @@ public class MagnetCatch : Skill
     }
     public void TestFinishSkill()
     {
-        EndSkillAction();
+        OffSkillAction();
     }
 #endif
 }

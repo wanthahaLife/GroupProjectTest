@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class PlayerSkillController : MonoBehaviour
 {
-    Transform skillRoot;
-    public Transform SkillRoot => skillRoot;
+    Transform handRoot;
+    public Transform HandRoot => handRoot;
     Player player;
 
-    public Action usingSkill;
-    public Action cancelSkill;
+    public Action onSKillAction;
+    public Action useSkillAction;
+    public Action offSkillAction;
 
     SkillName currentSkill = SkillName.RemoteBomb;
 
     private void Awake()
     {
-        skillRoot = GetComponentInChildren<HandRoot>().transform;
+        handRoot = GetComponentInChildren<HandRoot>().transform;
     }
 
     private void Start()
@@ -31,9 +32,15 @@ public class PlayerSkillController : MonoBehaviour
             HandRootTracker handRootTracker = GetComponentInChildren<HandRootTracker>();
 
             player.onSkillSelect += (skillName) => currentSkill = skillName;
-            player.onSkill += OnSkill;
-            player.onSkill += () => handRootTracker.OnTracking(skillRoot);
-            cancelSkill += handRootTracker.OffTracking;
+
+            player.onSkill += () => onSKillAction?.Invoke();
+            player.leftClick += () => useSkillAction?.Invoke();
+            player.rightClick += () => offSkillAction?.Invoke();
+
+            onSKillAction += OnSkill;
+
+            player.onSkill += () => handRootTracker.OnTracking(handRoot);
+            offSkillAction += handRootTracker.OffTracking;
         }
     }
 
@@ -42,10 +49,16 @@ public class PlayerSkillController : MonoBehaviour
         switch(currentSkill)
         {
             case SkillName.RemoteBomb:
+                Debug.Log("리모컨 폭탄 실행");
+                SkillFactory.Instance.GetRemoteBomb();
+                break;
+            case SkillName.RemoteBomb_Cube:
+                Debug.Log("리모컨 폭탄 큐브 실행");
                 SkillFactory.Instance.GetRemoteBomb();
                 break;
             case SkillName.MagnetCatch:
-                SkillFactory.Instance.GetMagnetCatch();
+                Debug.Log("마그넷 캐치 실행");
+                //SkillFactory.Instance.GetMagnetCatch();
                 break;
             case SkillName.IceMaker:
                 break;

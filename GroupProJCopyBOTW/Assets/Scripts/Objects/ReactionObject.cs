@@ -70,8 +70,6 @@ public class ReactionObject : RecycleObject
     }
 
 
-    const float MaxDestroyDamage = 1000.0f;
-
     Transform originParent;
 
     Rigidbody rigid;
@@ -88,7 +86,6 @@ public class ReactionObject : RecycleObject
         }
         originParent = transform.parent;
         reducePower = 1.0f / Weight;
-        ObjectHp = objectMaxHp;
         
         if(Type == ReactionType.Explosion)
         {
@@ -101,6 +98,7 @@ public class ReactionObject : RecycleObject
     {
         base.OnEnable();
         currentState = StateType.None;
+        ObjectHp = objectMaxHp;
     }
 
     private void Start()
@@ -119,9 +117,13 @@ public class ReactionObject : RecycleObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        if((reactionType & ReactionType.Explosion) != 0 && currentState == StateType.Throw) // isThrow)
+        if(currentState == StateType.Throw) // isThrow)
         {
-            DestroyReaction();
+            currentState = StateType.None;
+            if ((reactionType & ReactionType.Destroy) != 0)
+            {
+                DestroyReaction();
+            }
         }
     }
 
@@ -156,9 +158,10 @@ public class ReactionObject : RecycleObject
 
     void DestroyReaction()
     {
-         Boom();    
-         // -- 파괴 동작 코루틴 추가해야됨
-         gameObject.SetActive(false);
+        Boom();
+        currentState = StateType.Destroy;
+        // -- 파괴 동작 코루틴 추가해야됨
+        gameObject.SetActive(false);
     }
 
     void Boom()
@@ -172,12 +175,17 @@ public class ReactionObject : RecycleObject
             {
                 // 밑에 수정
                 ReactionObject reactionObj = obj.GetComponent<ReactionObject>();
+                RemoteBomb remoteBomb = obj.GetComponent<RemoteBomb>();
                 if (reactionObj != null)
                 {
-                    reactionObj.HitReaction(MaxDestroyDamage);
+                    reactionObj.HitReaction(true);
                     Vector3 dir = obj.transform.position - transform.position;
                     Vector3 power = dir.normalized * explosiveInfo.force + obj.transform.up * explosiveInfo.forceY;
                     reactionObj.ExplosionReaction(power);
+                }
+                else if(remoteBomb != null)
+                {
+                    remoteBomb.ExplosionReaction();
                 }
             }
         }
@@ -193,7 +201,7 @@ public class ReactionObject : RecycleObject
 
     public void PickUp(Transform root)
     {
-        if ((reactionType & ReactionType.Throw) != 0 && currentState != StateType.PickUp)
+        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.None)
         {
             transform.parent = root;
             Vector3 destPos = root.position;
@@ -214,7 +222,7 @@ public class ReactionObject : RecycleObject
             //isThrow = true;
             currentState = StateType.Throw;
 
-            rigid.AddForce((user.forward + user.up) * throwPower, ForceMode.Impulse);
+            rigid.AddForce((user.forward + user.up) * throwPower * reducePower, ForceMode.Impulse);
             //rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
             transform.parent = originParent;
         }

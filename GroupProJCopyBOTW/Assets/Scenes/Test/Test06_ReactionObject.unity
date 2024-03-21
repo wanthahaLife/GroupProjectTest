@@ -924,7 +924,7 @@ GameObject:
   - component: {fileID: 1610167902}
   - component: {fileID: 1610167901}
   m_Layer: 0
-  m_Name: Test_ReactionObj_Throw
+  m_Name: Test_ReactionObj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -999,7 +999,7 @@ MonoBehaviour:
     damage: 3
   Weight: 1
   objectMaxHp: 1
-  reactionType: 24
+  reactionType: 27
 --- !u!54 &2136777718
 Rigidbody:
   m_ObjectHideFlags: 0

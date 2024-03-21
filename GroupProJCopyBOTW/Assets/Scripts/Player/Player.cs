@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     public Action onSkill;
     Action onThrow;
     public Action onPickUp;
+    public Action onCancel;
 
     SkillName selectSkill = SkillName.RemoteBomb;
     SkillName SelectSkill
@@ -61,12 +62,13 @@ public class Player : MonoBehaviour
         pickUpPoint = pickUpRoot.position;
         pickUpPoint.y += pickUpHeightRange;
 
-        leftClick += PickUpObject;
-        rightClick += DropObject;
+        rightClick += PickUpObject;
+        onCancel += DropObject;
         onThrow += ThrowObject;
 
         onPickUp += () => handRootTracker.OnTracking(handRoot.transform);
-        rightClick += handRootTracker.OffTracking;
+        onSkill += () => handRootTracker.OnTracking(handRoot.transform);
+        onCancel += handRootTracker.OffTracking;
     }
 
 
@@ -87,12 +89,16 @@ public class Player : MonoBehaviour
         inputActions.Player.Skill5.performed += OnSkill5;
 
         inputActions.Player.Throw.performed += OnThrow;
+        inputActions.Player.Cancel.performed += OnCancel;
     }
 
 
 
     private void OnDisable()
     {
+        inputActions.Player.Cancel.performed -= OnCancel;
+        inputActions.Player.Throw.performed -= OnThrow;
+
         inputActions.Player.Skill5.performed -= OnSkill5;
         inputActions.Player.Skill4.performed -= OnSkill4;
         inputActions.Player.Skill3.performed -= OnSkill3;
@@ -234,6 +240,12 @@ public class Player : MonoBehaviour
     {
         onThrow?.Invoke();
     }
+
+    private void OnCancel(InputAction.CallbackContext context)
+    {
+        onCancel?.Invoke(); 
+    }
+
     private void OnMove(InputAction.CallbackContext context)
     {
         Vector3 tempDir = context.ReadValue<Vector2>();

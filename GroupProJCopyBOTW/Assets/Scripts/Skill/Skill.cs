@@ -42,6 +42,15 @@ public class Skill : RecycleObject
 
     }
 
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        owner.SkillController.onSKillAction = null;
+        owner.SkillController.useSkillAction = null;
+        owner.SkillController.offSkillAction = null;
+
+    }
+
     protected virtual void OnSkillAction()
     {
     }

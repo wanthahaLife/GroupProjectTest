@@ -116,6 +116,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""d35a2f25-ba28-4da5-a193-e3a78a29b433"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -272,6 +281,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Skill5"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""92eeefb6-3d8a-4df9-b237-35ad6dad2331"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KM"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -307,6 +327,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Skill5 = m_Player.FindAction("Skill5", throwIfNotFound: true);
         m_Player_OnSkill = m_Player.FindAction("OnSkill", throwIfNotFound: true);
         m_Player_Throw = m_Player.FindAction("Throw", throwIfNotFound: true);
+        m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -378,6 +399,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Skill5;
     private readonly InputAction m_Player_OnSkill;
     private readonly InputAction m_Player_Throw;
+    private readonly InputAction m_Player_Cancel;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -392,6 +414,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Skill5 => m_Wrapper.m_Player_Skill5;
         public InputAction @OnSkill => m_Wrapper.m_Player_OnSkill;
         public InputAction @Throw => m_Wrapper.m_Player_Throw;
+        public InputAction @Cancel => m_Wrapper.m_Player_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -431,6 +454,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Throw.started += instance.OnThrow;
             @Throw.performed += instance.OnThrow;
             @Throw.canceled += instance.OnThrow;
+            @Cancel.started += instance.OnCancel;
+            @Cancel.performed += instance.OnCancel;
+            @Cancel.canceled += instance.OnCancel;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -465,6 +491,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Throw.started -= instance.OnThrow;
             @Throw.performed -= instance.OnThrow;
             @Throw.canceled -= instance.OnThrow;
+            @Cancel.started -= instance.OnCancel;
+            @Cancel.performed -= instance.OnCancel;
+            @Cancel.canceled -= instance.OnCancel;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -503,5 +532,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnSkill5(InputAction.CallbackContext context);
         void OnOnSkill(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
 }

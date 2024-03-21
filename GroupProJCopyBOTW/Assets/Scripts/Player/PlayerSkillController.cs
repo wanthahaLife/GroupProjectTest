@@ -29,18 +29,15 @@ public class PlayerSkillController : MonoBehaviour
         }
         else
         {
-            HandRootTracker handRootTracker = GetComponentInChildren<HandRootTracker>();
 
             player.onSkillSelect += (skillName) => currentSkill = skillName;
 
             player.onSkill += () => onSKillAction?.Invoke();
-            player.leftClick += () => useSkillAction?.Invoke();
-            player.rightClick += () => offSkillAction?.Invoke();
+            player.rightClick += () => useSkillAction?.Invoke();
+            player.onCancel += () => offSkillAction?.Invoke();
 
             onSKillAction += OnSkill;
 
-            player.onSkill += () => handRootTracker.OnTracking(handRoot);
-            offSkillAction += handRootTracker.OffTracking;
         }
     }
 

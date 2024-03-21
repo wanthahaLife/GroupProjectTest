@@ -1,9 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -22,9 +18,6 @@ public class MagnetCatch : Skill
 
     Vector3 cameraDir = Vector3.zero;
 
-    /// <summary>
-    /// 
-    /// </summary>
     Transform destinationX;
 
     ObjectEditor target;
@@ -78,7 +71,7 @@ public class MagnetCatch : Skill
     {
         base.OnSkillAction();
         Debug.Log("마그넷");
-        //StartCoroutine(TargetCheck());
+        StartCoroutine(TargetCheck());
     }
     protected override void UseSkillAction()
     {

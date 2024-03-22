@@ -67,13 +67,13 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void OnSkillAction()
+    public override void OnSkillAction()
     {
         base.OnSkillAction();
         Debug.Log("마그넷");
         StartCoroutine(TargetCheck());
     }
-    protected override void UseSkillAction()
+    public override void UseSkillAction()
     {
         base.UseSkillAction();
         StopAllCoroutines();
@@ -93,7 +93,7 @@ public class MagnetCatch : Skill
         }
     }
 
-    protected override void OffSkillAction()
+    public override void OffSkillAction()
     {
         base.OffSkillAction();
         if (activatedSkill)

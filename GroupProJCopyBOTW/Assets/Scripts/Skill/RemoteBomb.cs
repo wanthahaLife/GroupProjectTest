@@ -38,28 +38,24 @@ public class RemoteBomb : Skill
     protected override void OnEnable()
     {
         base.OnEnable();
-        currentState = StateType.PickUp;
+        PickUp(owner.transform);
     }
 
-    protected override void OnSkillAction()
+    public override void OnSkillAction()
     {
         if(currentState == StateType.None)
         {
             Boom();
         }
-        else if(currentState == StateType.PickUp)
-        {
-            // 집어 넣기
-            gameObject.SetActive(false);
-        }
         Debug.Log("리모컨");
     }
 
-    protected override void OffSkillAction()
+    public override void OffSkillAction()
     {
+        base.OffSkillAction();
     }
 
-    public void ExplosionReaction()
+    public void Explosion()
     {
         if (currentState == StateType.None)
         {
@@ -88,7 +84,7 @@ public class RemoteBomb : Skill
                 }
                 else if (remoteBomb != null)
                 {
-                    remoteBomb.ExplosionReaction();
+                    remoteBomb.Explosion();
                 }
             }
         }
@@ -115,7 +111,7 @@ public class RemoteBomb : Skill
         if (currentState == StateType.PickUp)
         {
             rigid.isKinematic = false;
-            currentState = StateType.Throw;
+            currentState = StateType.None;      // 기본 오브젝트와 다름
 
             rigid.AddForce((user.forward + user.up) * throwPower * reducePower, ForceMode.Impulse);
             transform.parent = originParent;

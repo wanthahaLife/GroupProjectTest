@@ -125,10 +125,10 @@ public class Player : MonoBehaviour
         {
             isPickUp = value;
             animator.SetBool(Hash_IsPickUp, isPickUp);
+            // 마그넷 애니메이션 등 다른 애니메이션 if로 구분하기
         }
     }
     ReactionObject reaction;
-
     void PickUpObject()
     {
         if (!IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
@@ -147,14 +147,18 @@ public class Player : MonoBehaviour
                 }
             }
         }
+        // 상호작용 키 들었을 때 행동 야숨에서 확인하기
     }
 
     void ThrowObject()
     {
-        if (IsPickUp && reaction != null)
+        if (IsPickUp)
         {
             animator.SetTrigger(Hash_Throw);
-            reaction.Throw(throwPower, transform);
+            if (reaction != null)
+            {
+                reaction.Throw(throwPower, transform);
+            }
             IsPickUp = false;
             reaction = null;
         }
@@ -164,7 +168,10 @@ public class Player : MonoBehaviour
         if (IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
         {
             IsPickUp = false;
-            reaction.Drop();
+            if (reaction != null)
+            {
+                reaction.Drop();
+            }
         }
     }
 
@@ -173,7 +180,8 @@ public class Player : MonoBehaviour
         switch (selectSkill)
         {
             case SkillName.RemoteBomb:
-                //animator.SetBool("Hash_IsThrowStart", true);
+            case SkillName.RemoteBomb_Cube:
+                IsPickUp = true;
                 break;
         }
         onSkill?.Invoke();
@@ -217,23 +225,11 @@ public class Player : MonoBehaviour
 
     private void OnRightClick(InputAction.CallbackContext _)
     {
-        switch (selectSkill)
-        {
-            case SkillName.RemoteBomb:
-                //animator.SetBool("Hash_IsThrowStart", false);
-                break;
-        }
         rightClick?.Invoke();
     }
 
     private void OnLeftClick(InputAction.CallbackContext _)
     {
-        switch (selectSkill)
-        {
-            case SkillName.RemoteBomb:
-                //animator.SetTrigger("Hash_Throw");
-                break;
-        }
         leftClick?.Invoke();
     }
     private void OnThrow(InputAction.CallbackContext context)

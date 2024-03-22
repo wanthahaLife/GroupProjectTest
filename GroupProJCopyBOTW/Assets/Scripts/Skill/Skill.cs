@@ -25,14 +25,10 @@ public class Skill : RecycleObject
     protected override void OnEnable()
     {
         base.OnEnable();
-        if(owner == null)
+        if (owner == null)
         {
             owner = GameManager.Instance.Player;
         }
-
-        owner.SkillController.onSKillAction = OnSkillAction;
-        owner.SkillController.useSkillAction = UseSkillAction;
-        owner.SkillController.offSkillAction = OffSkillAction;
 
         originParent = transform.parent;
 
@@ -42,26 +38,18 @@ public class Skill : RecycleObject
 
     }
 
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        owner.SkillController.onSKillAction = null;
-        owner.SkillController.useSkillAction = null;
-        owner.SkillController.offSkillAction = null;
 
-    }
-
-    protected virtual void OnSkillAction()
+    public virtual void OnSkillAction()
     {
     }
 
-    protected virtual void UseSkillAction()
+    public virtual void UseSkillAction()
     {
 
     }
 
-    protected virtual void OffSkillAction()
+    public virtual void OffSkillAction()
     {
-
+        gameObject.SetActive(false);
     }
 }

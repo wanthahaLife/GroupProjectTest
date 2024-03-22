@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerSkillController : MonoBehaviour
 {
-    Transform handRoot;
-    public Transform HandRoot => handRoot;
+    Transform handRootTracker;
+    public Transform HandRoot => handRootTracker;
     Player player;
 
     public Action onSKillAction;
@@ -15,9 +16,13 @@ public class PlayerSkillController : MonoBehaviour
 
     SkillName currentSkill = SkillName.RemoteBomb;
 
+    RemoteBomb remoteBomb;
+    RemoteBomb remoteBombCube;
+    MagnetCatch magnetCatch;
+
     private void Awake()
     {
-        handRoot = GetComponentInChildren<HandRoot>().transform;
+        handRootTracker = transform.GetChild(3);
     }
 
     private void Start()
@@ -30,15 +35,58 @@ public class PlayerSkillController : MonoBehaviour
         else
         {
 
-            player.onSkillSelect += (skillName) => currentSkill = skillName;
+            player.onSkillSelect += ConnectSkill;
 
             player.onSkill += () => onSKillAction?.Invoke();
+            player.onSkill += OnSkill;
             player.rightClick += () => useSkillAction?.Invoke();
             player.onCancel += () => offSkillAction?.Invoke();
 
-            onSKillAction += OnSkill;
+            //onSKillAction += OnSkill;
 
         }
+    }
+
+    void ConnectSkill(SkillName skiilName)
+    {
+        // 구현중
+        currentSkill = skiilName;
+        switch (currentSkill)
+        {
+            case SkillName.RemoteBomb:
+                Debug.Log("변경 : 리모컨 폭탄");
+                if (remoteBomb != null)
+                {
+                    onSKillAction = remoteBomb.OnSkillAction;
+                    useSkillAction = remoteBomb.UseSkillAction;
+                    offSkillAction = remoteBomb.OffSkillAction;
+                }
+
+                break;
+            case SkillName.RemoteBomb_Cube:
+                Debug.Log("변경 : 리모컨 폭탄(큐브)");
+                if (remoteBombCube != null)
+                {
+                    onSKillAction = remoteBombCube.OnSkillAction;
+                    useSkillAction = remoteBombCube.UseSkillAction;
+                    offSkillAction = remoteBombCube.OffSkillAction;
+                }
+                break;
+            case SkillName.MagnetCatch:
+                Debug.Log("변경 : 마그넷 캐치");
+                if (magnetCatch != null)
+                {
+                    onSKillAction = magnetCatch.OnSkillAction;
+                    useSkillAction = magnetCatch.UseSkillAction;
+                    offSkillAction = magnetCatch.OffSkillAction;
+                }
+                break;
+            case SkillName.IceMaker:
+                break;
+            case SkillName.TimeLock:
+                break;
+        }
+
     }
 
     void OnSkill()
@@ -46,24 +94,36 @@ public class PlayerSkillController : MonoBehaviour
         switch(currentSkill)
         {
             case SkillName.RemoteBomb:
-                Debug.Log("리모컨 폭탄 실행");
-                SkillFactory.Instance.GetRemoteBomb();
+                Debug.Log("실행 : 리모컨 폭탄");
+                if(remoteBomb == null)
+                {
+                    remoteBomb = SkillFactory.Instance.GetRemoteBomb();
+                }
+                
                 break;
             case SkillName.RemoteBomb_Cube:
-                Debug.Log("리모컨 폭탄 큐브 실행");
-                SkillFactory.Instance.GetRemoteBomb();
+                Debug.Log("실행 : 리모컨 폭탄 큐브");
+                if (remoteBombCube == null)
+                {
+                    remoteBombCube = SkillFactory.Instance.GetRemoteBomb();
+                }
                 break;
             case SkillName.MagnetCatch:
-                Debug.Log("마그넷 캐치 실행");
-                //SkillFactory.Instance.GetMagnetCatch();
+                Debug.Log("실행 : 마그넷 캐치");
+                if (magnetCatch == null)
+                {
+                    magnetCatch = SkillFactory.Instance.GetMagnetCatch();
+                }
                 break;
             case SkillName.IceMaker:
                 break;
             case SkillName.TimeLock: 
                 break;
         }
-        //startSkill?.Invoke();
+        ConnectSkill(currentSkill);
+        onSKillAction?.Invoke();
     }
+
 
 #if UNITY_EDITOR
 

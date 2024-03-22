@@ -185,7 +185,7 @@ public class ReactionObject : RecycleObject
                 }
                 else if(remoteBomb != null)
                 {
-                    remoteBomb.ExplosionReaction();
+                    remoteBomb.Explosion();
                 }
             }
         }

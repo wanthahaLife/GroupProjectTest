@@ -163,18 +163,18 @@ public class ReactionObject : RecycleObject
         }
     }
 
-    void DestroyReaction()
+    protected void DestroyReaction()
     {
-        Boom();
         currentState = StateType.Destroy;
+        Boom();
         // -- 파괴 동작 코루틴 추가해야됨
-        gameObject.SetActive(false);
+        ReturnToPool();
     }
 
-    protected void Boom()
+    void Boom()
     {
         if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
-        {   
+        {
             currentState = StateType.Boom;
             // -- 폭발 동작 코루틴 추가해야됨
             Collider[] objects = Physics.OverlapSphere(transform.position, explosiveInfo.boomRange);
@@ -215,6 +215,15 @@ public class ReactionObject : RecycleObject
         }
     }
 
+    public void PickUp()
+    {
+        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.None)
+        {
+            currentState = StateType.PickUp;
+            rigid.isKinematic = true;
+        }
+    }
+
     public void Throw(float throwPower, Transform user)
     {
         if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.PickUp)
@@ -228,6 +237,12 @@ public class ReactionObject : RecycleObject
             //rigid.AddRelativeForce((transform.forward + transform.up) * throwPower, ForceMode.Impulse);
             transform.parent = originParent;
         }
+    }
+
+    protected void ReturnToPool()
+    {
+        transform.SetParent(originParent);
+        gameObject.SetActive(false);
     }
 
     public void Drop()

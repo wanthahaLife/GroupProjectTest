@@ -29,6 +29,23 @@ public class Skill : ReactionObject
             owner = GameManager.Instance.Player;
         }
 
+
+
+
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        owner.SkillController.onSKillAction = null;
+        owner.SkillController.useSkillAction = null;
+        owner.SkillController.offSkillAction = null;
+
+    }
+
+    public virtual void OnSkillAction()
+    {
         owner.SkillController.onSKillAction = OnSkillAction;
         owner.SkillController.useSkillAction = UseSkillAction;
         owner.SkillController.offSkillAction = OffSkillAction;
@@ -36,28 +53,14 @@ public class Skill : ReactionObject
         transform.parent = owner.SkillController.HandRoot;
         transform.position = owner.SkillController.HandRoot.position;
         transform.forward = owner.transform.forward;
-
     }
 
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        owner.SkillController.onSKillAction = null;
-        owner.SkillController.useSkillAction = null;
-        owner.SkillController.offSkillAction = null;
-
-    }
-
-    protected virtual void OnSkillAction()
-    {
-    }
-
-    protected virtual void UseSkillAction()
+    public virtual void UseSkillAction()
     {
 
     }
 
-    protected virtual void OffSkillAction()
+    public virtual void OffSkillAction()
     {
 
     }

@@ -16,6 +16,9 @@ public class PlayerSkillController : MonoBehaviour
 
     SkillName currentSkill = SkillName.RemoteBomb;
 
+    public ReactionObject CurrentOnSkill => currentOnSkill;
+    ReactionObject currentOnSkill;
+
     RemoteBomb remoteBomb;
     RemoteBomb remoteBombCube;
     MagnetCatch magnetCatch;
@@ -28,7 +31,7 @@ public class PlayerSkillController : MonoBehaviour
     private void Start()
     {
         player = GameManager.Instance.Player;
-        if(player == null)
+        if (player == null)
         {
             Debug.LogError("플레이어가 없습니다.");
         }
@@ -40,7 +43,7 @@ public class PlayerSkillController : MonoBehaviour
             player.onSkill += () => onSKillAction?.Invoke();
             player.onSkill += OnSkill;
             player.rightClick += () => useSkillAction?.Invoke();
-            player.onCancel += () => offSkillAction?.Invoke();
+            player.onCancel += CancelSkill;
 
             //onSKillAction += OnSkill;
 
@@ -55,6 +58,10 @@ public class PlayerSkillController : MonoBehaviour
         {
             case SkillName.RemoteBomb:
                 Debug.Log("변경 : 리모컨 폭탄");
+                //if (!remoteBomb.enabled)
+                //{
+                //    remoteBomb = null;
+                //}
                 if (remoteBomb != null)
                 {
                     onSKillAction = remoteBomb.OnSkillAction;
@@ -91,37 +98,46 @@ public class PlayerSkillController : MonoBehaviour
 
     void OnSkill()
     {
-        switch(currentSkill)
+        switch (currentSkill)
         {
             case SkillName.RemoteBomb:
-                Debug.Log("실행 : 리모컨 폭탄");
-                if(remoteBomb == null)
+                if (remoteBomb == null)
                 {
+                    Debug.Log("실행 : 리모컨 폭탄");
                     remoteBomb = SkillFactory.Instance.GetRemoteBomb();
+                    currentOnSkill = remoteBomb;
                 }
-                
+
                 break;
             case SkillName.RemoteBomb_Cube:
-                Debug.Log("실행 : 리모컨 폭탄 큐브");
                 if (remoteBombCube == null)
                 {
+                    Debug.Log("실행 : 리모컨 폭탄 큐브");
                     remoteBombCube = SkillFactory.Instance.GetRemoteBomb();
+                    currentOnSkill = remoteBombCube;
                 }
                 break;
             case SkillName.MagnetCatch:
-                Debug.Log("실행 : 마그넷 캐치");
                 if (magnetCatch == null)
                 {
+                    Debug.Log("실행 : 마그넷 캐치");
                     magnetCatch = SkillFactory.Instance.GetMagnetCatch();
+                    currentOnSkill = magnetCatch;
                 }
                 break;
             case SkillName.IceMaker:
                 break;
-            case SkillName.TimeLock: 
+            case SkillName.TimeLock:
                 break;
         }
         ConnectSkill(currentSkill);
         onSKillAction?.Invoke();
+    }
+
+    void CancelSkill()
+    {
+        offSkillAction?.Invoke();
+        currentOnSkill = null;
     }
 
 

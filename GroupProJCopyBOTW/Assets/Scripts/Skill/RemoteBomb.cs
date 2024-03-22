@@ -8,25 +8,27 @@ public class RemoteBomb : Skill
     protected override void OnEnable()
     {
         base.OnEnable();
-        currentState = StateType.PickUp;
+        PickUp();
     }
 
-    protected override void OnSkillAction()
+    public override void OnSkillAction()
     {
-        if(currentState == StateType.None)
+        if (currentState == StateType.None)
         {
-            Boom();
+            DestroyReaction();
         }
-        else if(currentState == StateType.PickUp)
+        else
         {
-            // 집어 넣기
-            gameObject.SetActive(false);
+            base.OnSkillAction();
         }
-        Debug.Log("리모컨");
     }
 
-    protected override void OffSkillAction()
+    public override void OffSkillAction()
     {
+        if(currentState == StateType.PickUp)
+        {
+            ReturnToPool();
+        }
     }
 
     protected override void CollisionAfterThrow()

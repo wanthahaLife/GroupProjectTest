@@ -62,9 +62,9 @@ public class Player : MonoBehaviour
         pickUpPoint = pickUpRoot.position;
         pickUpPoint.y += pickUpHeightRange;
 
-        rightClick += PickUpObject;
-        onCancel += DropObject;
+        rightClick += PickUpObjectDetect;
         onThrow += ThrowObject;
+        onCancel += CancelSkill;
 
         onPickUp += () => handRootTracker.OnTracking(handRoot.transform);
         onSkill += () => handRootTracker.OnTracking(handRoot.transform);
@@ -129,50 +129,52 @@ public class Player : MonoBehaviour
         }
     }
     ReactionObject reaction;
-    void PickUpObject()
+    void PickUpObjectDetect()
     {
         if (!IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
         {
             Collider[] hit = Physics.OverlapCapsule(pickUpRoot.position, pickUpPoint, liftRadius);
-            for(int i = 0; i < hit.Length; i++)
+            for (int i = 0; i < hit.Length; i++)
             {
                 reaction = hit[i].transform.GetComponent<ReactionObject>();
                 if (reaction != null && (reaction.Type & ReactionType.Throw) != 0)
                 {
-                    IsPickUp = true;
-                    onPickUp?.Invoke();
-                    reaction.PickUp(handRootTracker.transform);
-                    reaction.transform.rotation = Quaternion.identity;
+                    PickUpObject();
                     break;
                 }
             }
         }
+        else if (IsPickUp && reaction != null)    // 맨손일 때 만 가능하도록 조건 넣기
+        {
+            IsPickUp = false;
+            reaction.Drop();
+            reaction = null;
+        }
         // 상호작용 키 들었을 때 행동 야숨에서 확인하기
+    }
+
+    void PickUpObject()
+    {
+        IsPickUp = true;
+        onPickUp?.Invoke();
+        reaction.PickUp(handRootTracker.transform);
+        reaction.transform.rotation = Quaternion.identity;
     }
 
     void ThrowObject()
     {
-        if (IsPickUp)
+        if (IsPickUp && reaction != null)
         {
             animator.SetTrigger(Hash_Throw);
-            if (reaction != null)
-            {
-                reaction.Throw(throwPower, transform);
-            }
+            reaction.Throw(throwPower, transform);
             IsPickUp = false;
             reaction = null;
         }
     }
-    void DropObject()
+
+    void CancelSkill()
     {
-        if (IsPickUp)    // 맨손일 때 만 가능하도록 조건 넣기
-        {
-            IsPickUp = false;
-            if (reaction != null)
-            {
-                reaction.Drop();
-            }
-        }
+        IsPickUp = false;
     }
 
     private void OnSkill(InputAction.CallbackContext _)
@@ -180,11 +182,17 @@ public class Player : MonoBehaviour
         switch (selectSkill)
         {
             case SkillName.RemoteBomb:
+                
+                break;
             case SkillName.RemoteBomb_Cube:
-                IsPickUp = true;
                 break;
         }
-        onSkill?.Invoke();
+        if (!IsPickUp)
+        {
+            onSkill?.Invoke();
+            reaction = SkillController.CurrentOnSkill;
+            IsPickUp = true;
+        }
     }
 
     private void OnSkill1(InputAction.CallbackContext _)
@@ -239,7 +247,7 @@ public class Player : MonoBehaviour
 
     private void OnCancel(InputAction.CallbackContext context)
     {
-        onCancel?.Invoke(); 
+        onCancel?.Invoke();
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -260,7 +268,7 @@ public class Player : MonoBehaviour
             character.rotation = Quaternion.Slerp(character.rotation, Quaternion.LookRotation(inputDir) * transform.rotation, rotateSpeed * Time.deltaTime);
             //character.rotation = Quaternion.LookRotation(inputDir) * transform.rotation;
         }
-        if(isMoveInput)
+        if (isMoveInput)
         {
             LookForwardPlayer(Camera.main.transform.forward);
         }

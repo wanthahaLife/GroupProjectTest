@@ -34,7 +34,7 @@ public class ReactionObject : RecycleObject
         set
         {
             objectHp = value;
-            if (objectHp < 0.0f)
+            if (objectHp < 0.0f && (reactionType & ReactionType.Destroy) != 0)
             {
                 DestroyReaction();
             }
@@ -157,7 +157,7 @@ public class ReactionObject : RecycleObject
 
     public void HitReaction(float power)
     {
-        if ((reactionType & ReactionType.Destroy) != 0 && (reactionType & ReactionType.Hit) != 0)
+        if ((reactionType & ReactionType.Hit) != 0)
         {
             ObjectHp -= power;
         }

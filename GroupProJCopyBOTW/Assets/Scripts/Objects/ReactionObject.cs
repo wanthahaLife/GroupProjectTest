@@ -14,16 +14,17 @@ public enum ReactionType
     Throw = 2,
     Magnetic = 4,
     Destroy = 8,
-    Explosion = 16
+    Explosion = 16,
+    Hit = 32
 }
 
 [RequireComponent(typeof(Rigidbody))]
 public class ReactionObject : RecycleObject
 {
-    [SerializeField] ExplosiveObject explosiveInfo;
+    [SerializeField] protected ExplosiveObject explosiveInfo;
 
     public float Weight = 1.0f;
-    float reducePower = 1.0f;
+    protected float reducePower = 1.0f;
     public float objectMaxHp = 1.0f;
 
     float objectHp;
@@ -39,7 +40,7 @@ public class ReactionObject : RecycleObject
             }
         }
     }
-    enum StateType
+    protected enum StateType
     {
         None = 0,
         PickUp,
@@ -47,10 +48,10 @@ public class ReactionObject : RecycleObject
         Move,
         Destroy,
         Boom,
-        Magnet
+        Magnet,
     }
 
-    StateType currentState = StateType.None;
+    protected StateType currentState = StateType.None;
 
     //bool isCarried = false;
     //bool isThrow = false;
@@ -70,9 +71,9 @@ public class ReactionObject : RecycleObject
     }
 
 
-    Transform originParent;
+    protected Transform originParent;
 
-    Rigidbody rigid;
+    protected Rigidbody rigid;
 
 
     bool magnetReaction = false;
@@ -115,19 +116,25 @@ public class ReactionObject : RecycleObject
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+    protected void OnCollisionEnter(Collision collision)
     {
         if(currentState == StateType.Throw) // isThrow)
         {
-            currentState = StateType.None;
-            if ((reactionType & ReactionType.Destroy) != 0)
-            {
-                DestroyReaction();
-            }
+            CollisionAfterThrow();
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    protected virtual void CollisionAfterThrow()
+    {
+        currentState = StateType.None;
+        if ((reactionType & ReactionType.Destroy) != 0)
+        {
+            DestroyReaction();
+        }
+
+    }
+
+    protected void OnCollisionExit(Collision collision)
     {
         if (magnetReaction)
         {
@@ -140,7 +147,7 @@ public class ReactionObject : RecycleObject
     {
         if (isExplosion)
         {
-            HitReaction(objectMaxHp);
+            Boom();
         }
         else
         {
@@ -150,7 +157,7 @@ public class ReactionObject : RecycleObject
 
     public void HitReaction(float power)
     {
-        if ((reactionType & ReactionType.Destroy) != 0)
+        if ((reactionType & ReactionType.Destroy) != 0 && (reactionType & ReactionType.Hit) != 0)
         {
             ObjectHp -= power;
         }
@@ -164,7 +171,7 @@ public class ReactionObject : RecycleObject
         gameObject.SetActive(false);
     }
 
-    void Boom()
+    protected void Boom()
     {
         if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
         {   
@@ -175,17 +182,12 @@ public class ReactionObject : RecycleObject
             {
                 // 밑에 수정
                 ReactionObject reactionObj = obj.GetComponent<ReactionObject>();
-                RemoteBomb remoteBomb = obj.GetComponent<RemoteBomb>();
                 if (reactionObj != null)
                 {
                     reactionObj.HitReaction(true);
                     Vector3 dir = obj.transform.position - transform.position;
                     Vector3 power = dir.normalized * explosiveInfo.force + obj.transform.up * explosiveInfo.forceY;
                     reactionObj.ExplosionReaction(power);
-                }
-                else if(remoteBomb != null)
-                {
-                    remoteBomb.Explosion();
                 }
             }
         }

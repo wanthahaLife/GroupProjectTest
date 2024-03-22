@@ -10,7 +10,7 @@ public enum SkillName
     IceMaker = 5
 }
 
-public class Skill : RecycleObject
+public class Skill : ReactionObject
 {
     public SkillName skillName = SkillName.RemoteBomb;
     public float coolTime = 1.0f;
@@ -20,17 +20,18 @@ public class Skill : RecycleObject
     public bool canUse = false;
 
     protected Player owner;
-    protected Transform originParent = null;
 
     protected override void OnEnable()
     {
         base.OnEnable();
-        if (owner == null)
+        if(owner == null)
         {
             owner = GameManager.Instance.Player;
         }
 
-        originParent = transform.parent;
+        owner.SkillController.onSKillAction = OnSkillAction;
+        owner.SkillController.useSkillAction = UseSkillAction;
+        owner.SkillController.offSkillAction = OffSkillAction;
 
         transform.parent = owner.SkillController.HandRoot;
         transform.position = owner.SkillController.HandRoot.position;
@@ -38,18 +39,26 @@ public class Skill : RecycleObject
 
     }
 
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        owner.SkillController.onSKillAction = null;
+        owner.SkillController.useSkillAction = null;
+        owner.SkillController.offSkillAction = null;
 
-    public virtual void OnSkillAction()
+    }
+
+    protected virtual void OnSkillAction()
     {
     }
 
-    public virtual void UseSkillAction()
+    protected virtual void UseSkillAction()
     {
 
     }
 
-    public virtual void OffSkillAction()
+    protected virtual void OffSkillAction()
     {
-        gameObject.SetActive(false);
+
     }
 }

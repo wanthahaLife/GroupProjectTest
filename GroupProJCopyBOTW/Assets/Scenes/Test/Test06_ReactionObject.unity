@@ -999,7 +999,7 @@ MonoBehaviour:
     damage: 3
   Weight: 1
   objectMaxHp: 1
-  reactionType: 27
+  reactionType: 56
 --- !u!54 &2136777718
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -130,13 +130,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d3a9fab6aeb608459fac38b0099665c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosiveInfo:
+    force: 4
+    forceY: 5
+    boomRange: 3
+    damage: 3
+  Weight: 1
+  objectMaxHp: 1
+  reactionType: 2
   skillName: 1
   coolTime: 1
   canUse: 0
-  throwPower: 5
-  force: 10
-  forceY: 5
-  boomRange: 3
 --- !u!54 &5880022596329921298
 Rigidbody:
   m_ObjectHideFlags: 0

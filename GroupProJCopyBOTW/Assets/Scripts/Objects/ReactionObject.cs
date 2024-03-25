@@ -15,7 +15,8 @@ public enum ReactionType
     Magnetic = 4,
     Destroy = 8,
     Explosion = 16,
-    Hit = 32
+    Hit = 32,
+    Skill = 64
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -51,8 +52,13 @@ public class ReactionObject : RecycleObject
         Magnet,
     }
 
+    bool IsMoveable => (reactionType & ReactionType.Move) != 0;
+    bool IsThrowable => (reactionType & ReactionType.Throw) != 0;
+    bool IsMagnetic => (reactionType & ReactionType.Magnetic) != 0;
+    bool IsDestructible => (reactionType & ReactionType.Destroy) != 0;
+    bool IsExplosive => (reactionType & ReactionType.Explosion) != 0;
+    bool IsSkill => (reactionType & ReactionType.Skill) != 0;
 
-    bool IsDestructable => (reactionType & ReactionType.Destroy) != 0;
 
     protected StateType currentState = StateType.None;
 
@@ -60,18 +66,8 @@ public class ReactionObject : RecycleObject
     //bool isThrow = false;
 
     public ReactionType reactionType;
-    public ReactionType Type
-    {
-        get => reactionType;
-        set
-        {
-            reactionType = value;
-            /*if ((reactionType & ReactionType.Explosion) != 0)
-            {
-                reactionType |= ReactionType.Destroy;
-            }*/
-        }
-    }
+    public ReactionType Type => reactionType;
+
 
 
     protected Transform originParent;
@@ -81,7 +77,7 @@ public class ReactionObject : RecycleObject
 
     bool magnetReaction = false;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         rigid = GetComponent<Rigidbody>();
         if(rigid == null)
@@ -90,12 +86,6 @@ public class ReactionObject : RecycleObject
         }
         originParent = transform.parent;
         reducePower = 1.0f / Weight;
-        
-        if(Type == ReactionType.Explosion)
-        {
-            Type |= ReactionType.Destroy;
-        }
-        //isCarried = false;
     }
 
     protected override void OnEnable()
@@ -118,6 +108,16 @@ public class ReactionObject : RecycleObject
         }
     }
 
+    private void FixedUpdate()
+    {
+        
+    }
+    
+
+    public void StickMagnetMove(Vector3 pos)
+    {
+
+    }
 
     protected void OnCollisionEnter(Collision collision)
     {
@@ -164,7 +164,7 @@ public class ReactionObject : RecycleObject
 
     protected void DestroyReaction()
     {
-        if ((reactionType & ReactionType.Destroy) != 0) 
+        if (IsDestructible) 
         {
             //currentState = StateType.Destroy;
             // -- 파괴 동작 코루틴 추가해야됨
@@ -174,7 +174,7 @@ public class ReactionObject : RecycleObject
 
     protected void Boom()
     {
-        if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
+        if (IsExplosive && currentState != StateType.Boom)
         {
             currentState = StateType.Boom;
             // -- 폭발 동작 코루틴 추가해야됨
@@ -198,7 +198,7 @@ public class ReactionObject : RecycleObject
 
     public void ExplosionShock(Vector3 power)
     {
-        if ((reactionType & ReactionType.Move) != 0)
+        if (IsMoveable)
         {
             rigid.AddForce(power * reducePower, ForceMode.Impulse);
         }
@@ -206,13 +206,14 @@ public class ReactionObject : RecycleObject
 
     public void PickUp(Transform root)
     {
-        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.None)
+        if ((IsSkill || IsThrowable) && currentState == StateType.None)
         {
             transform.parent = root;
             Vector3 destPos = root.position;
 
             transform.position = destPos;
-            //isCarried = true;
+            transform.forward = root.forward;
+
             currentState = StateType.PickUp;
             rigid.isKinematic = true;
         }
@@ -220,7 +221,7 @@ public class ReactionObject : RecycleObject
 
     public void PickUp()
     {
-        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.None)
+        if (IsThrowable && currentState == StateType.None)
         {
             currentState = StateType.PickUp;
             rigid.isKinematic = true;
@@ -229,7 +230,7 @@ public class ReactionObject : RecycleObject
 
     public void Throw(float throwPower, Transform user)
     {
-        if ((reactionType & ReactionType.Throw) != 0 && currentState == StateType.PickUp)
+        if (IsThrowable && currentState == StateType.PickUp)
         {
             rigid.isKinematic = false;
             //isCarried = false;
@@ -250,7 +251,7 @@ public class ReactionObject : RecycleObject
 
     public void Drop()
     {
-        if ((reactionType & ReactionType.Throw) != 0)
+        if (IsThrowable)
         {
             transform.parent = originParent;
             //isCarried = true;
@@ -270,13 +271,13 @@ public class ReactionObject : RecycleObject
         }
     }
 
-    private void OnValidate()
-    {
-        if(Type == ReactionType.Explosion)
-        {
-            Type |= ReactionType.Destroy;
-        }
-    }
+    //private void OnValidate()
+    //{
+    //    if(Type == ReactionType.Explosion)
+    //    {
+    //        Type |= ReactionType.Destroy;
+    //    }
+    //}
 #endif
 
 }

@@ -150,10 +150,10 @@ public class PlayerSkillController : MonoBehaviour
 
         if (currentOnSkill != null)
         {
-            Debug.Log(currentOnSkill);
-            currentOnSkill.transform.SetParent(HandRoot);
-            currentOnSkill.transform.position = HandRoot.position;
-            currentOnSkill.transform.forward = player.transform.forward;
+            currentOnSkill.PickUp(HandRoot);
+            //currentOnSkill.transform.SetParent(HandRoot);
+            //currentOnSkill.transform.position = HandRoot.position;
+            //currentOnSkill.transform.forward = player.transform.forward;
         }
 
         onSKillAction?.Invoke();

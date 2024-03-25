@@ -40,6 +40,16 @@ public class Player : MonoBehaviour
             {
                 selectSkill = value;
                 Debug.Log($"스킬 [{selectSkill}]로 설정");
+                switch (selectSkill)
+                {
+                    case SkillName.RemoteBomb:
+                    case SkillName.RemoteBomb_Cube:
+                        if (reaction != null && reaction.transform.CompareTag("Skill"))
+                        {
+                            CancelSkill();
+                        }
+                        break;
+                }
                 onSkillSelect?.Invoke(selectSkill);
             }
         }
@@ -175,7 +185,12 @@ public class Player : MonoBehaviour
 
     void CancelSkill()
     {
-        IsPickUp = false;
+        if(IsPickUp && reaction != null)
+        {
+            IsPickUp = false;
+            reaction.Drop();
+            reaction = null;
+        }
     }
 
     private void OnSkill(InputAction.CallbackContext _)

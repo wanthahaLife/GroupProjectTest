@@ -1,5 +1,9 @@
 using System.Collections;
 using UnityEngine;
+using Unity.VisualScripting;
+using System;
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,41 +17,30 @@ public class MagnetCatch : Skill
     public float moveYSpeed = 2.0f;
     public float moveZSpeed = 1.0f;
 
-    bool IsMagnetic => target != null;
+    bool isMagnetic = false;
     bool activatedSkill = false;
 
     Vector3 cameraDir = Vector3.zero;
 
     Transform destinationX;
 
-    ObjectEditor target;
-    Transform targetTransform;
-    Transform targetOriginParent;
-    Rigidbody targetRigid;
+    Transform target;
     Vector3 hitPoint;
     PlayerVCam vcam;
     Cinemachine.CinemachineTargetGroup targetGroup;
 
-
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
     readonly Vector3 Top = new Vector3(0f, 1.0f, 0f);
 
+    Action<Vector3> onStick;
 
-    private void Awake()
+    protected override void Awake()
     {
-        destinationX = transform.GetChild(0);
+        base.Awake();
+        destinationX = transform.GetChild(1);
         targetGroup = GetComponentInChildren<Cinemachine.CinemachineTargetGroup>();
         
     }
-    /*protected override void Start()
-    {
-        base.Start();
-        if (vcam == null)
-        {
-            vcam = GameManager.Instance.PlayerCam;
-        }
-        vcam.onMouseMove += CameraMove;
-    }*/
 
     protected override void OnEnable()
     {
@@ -70,26 +63,21 @@ public class MagnetCatch : Skill
     public override void OnSkillAction()
     {
         base.OnSkillAction();
-        Debug.Log("마그넷");
         StartCoroutine(TargetCheck());
     }
     public override void UseSkillAction()
     {
         base.UseSkillAction();
         StopAllCoroutines();
-        if (IsMagnetic && !activatedSkill)
+        if (isMagnetic && !activatedSkill)
         {
-            //vcam.
             destinationX.position = hitPoint;
-            destinationX.parent = owner.transform.GetChild(1);
+            destinationX.parent = owner.transform.GetChild(1);      // 플레이어의 CameraRoot를 부모로 설정해서 카메라와 동일한 움직임
 
-            targetGroup.m_Targets[0].target = targetTransform;
-            //targetOriginParent = targetTransform.parent;
-            //targetTransform.parent = destinationX;
-            targetRigid = targetTransform.GetComponent<Rigidbody>();
-            //target.OnSkillAffect(skillName);
+            targetGroup.m_Targets[0].target = target;
 
             activatedSkill = true;
+
         }
     }
 
@@ -98,10 +86,8 @@ public class MagnetCatch : Skill
         base.OffSkillAction();
         if (activatedSkill)
         {
-            //target.FinishSkillAffect(skillName);
             target = null;
             activatedSkill = false;
-            //targetTransform.parent = targetOriginParent;
 
             destinationX.parent = transform;
         }
@@ -112,13 +98,15 @@ public class MagnetCatch : Skill
         while (true) {
         Ray ray = Camera.main.ViewportPointToRay(Center);
             Physics.Raycast(ray, out RaycastHit hit, magnetDistance);
-            targetTransform = hit.transform;
-            if (targetTransform != null)
+            target = hit.transform;
+            if (target != null)
             {
-                target = targetTransform.GetComponent<ObjectEditor>();
-                if (IsMagnetic)
+                ReactionObject reactionTarget = target.GetComponent<ReactionObject>();
+                isMagnetic = (reactionTarget != null) && (reactionTarget.Type == ReactionType.Magnetic);
+                if (isMagnetic)
                 {
-                    hitPoint = hit.point;
+                    hitPoint = hit.collider.bounds.center;
+                    onStick = reactionTarget.StickMagnetMove;
                 }
             }
 
@@ -129,13 +117,14 @@ public class MagnetCatch : Skill
     void MoveTarget()
     {
 
-        float dirX = Camera.main.ViewportToWorldPoint(Center).x - targetTransform.position.x * moveXSpeed;
+        float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
         float dirY = cameraDir.y * moveYSpeed;
         float dirZ = 0f;
 
         Vector3 dir = new Vector3(dirX, dirY, dirZ);
 
-        targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
+        onStick?.Invoke(dir * Time.fixedDeltaTime);
+        // targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
     }
 
     void CameraMove(Vector3 pos)

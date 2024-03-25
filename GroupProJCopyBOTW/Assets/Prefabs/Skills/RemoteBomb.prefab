@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 7903323959094361683}
   m_Layer: 0
   m_Name: RemoteBomb
-  m_TagString: Untagged
+  m_TagString: Skill
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -185,7 +185,7 @@ MonoBehaviour:
     damage: 3
   Weight: 1
   objectMaxHp: 1
-  reactionType: 27
+  reactionType: 91
   skillName: 1
   coolTime: 1
   canUse: 0

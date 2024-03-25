@@ -8,7 +8,7 @@ public class RemoteBomb : Skill
     protected override void OnEnable()
     {
         base.OnEnable();
-        PickUp();
+        //PickUp();
     }
 
     public override void OnSkillAction()

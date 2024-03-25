@@ -103,7 +103,7 @@ MonoBehaviour:
     damage: 3
   Weight: 1
   objectMaxHp: 1
-  reactionType: 27
+  reactionType: 91
   skillName: 2
   coolTime: 1
   canUse: 0

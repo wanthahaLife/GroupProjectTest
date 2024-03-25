@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 public enum SkillName
 {
@@ -20,6 +21,12 @@ public class Skill : ReactionObject
     public bool canUse = false;
 
     protected Player owner;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        rigid.isKinematic = true;
+    }
 
     protected override void OnEnable()
     {

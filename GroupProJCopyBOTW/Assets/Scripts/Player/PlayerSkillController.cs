@@ -22,7 +22,7 @@ public class PlayerSkillController : MonoBehaviour
     ReactionObject currentOnSkill;
 
     RemoteBomb remoteBomb;
-    RemoteBomb remoteBombCube;
+    RemoteBombCube remoteBombCube;
     MagnetCatch magnetCatch;
 
     private void Awake()
@@ -124,7 +124,7 @@ public class PlayerSkillController : MonoBehaviour
                 if (remoteBombCube == null)
                 {
                     Debug.Log("실행 : 리모컨 폭탄 큐브");
-                    remoteBombCube = SkillFactory.Instance.GetRemoteBomb();
+                    remoteBombCube = SkillFactory.Instance.GetRemoteBombCube();
                     currentOnSkill = remoteBombCube;
                 }
                 else
@@ -150,6 +150,7 @@ public class PlayerSkillController : MonoBehaviour
 
         if (currentOnSkill != null)
         {
+            Debug.Log(currentOnSkill);
             currentOnSkill.transform.SetParent(HandRoot);
             currentOnSkill.transform.position = HandRoot.position;
             currentOnSkill.transform.forward = player.transform.forward;

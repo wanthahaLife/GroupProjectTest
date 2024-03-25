@@ -51,6 +51,9 @@ public class ReactionObject : RecycleObject
         Magnet,
     }
 
+
+    bool IsDestructable => (reactionType & ReactionType.Destroy) != 0;
+
     protected StateType currentState = StateType.None;
 
     //bool isCarried = false;
@@ -63,10 +66,10 @@ public class ReactionObject : RecycleObject
         set
         {
             reactionType = value;
-            if ((reactionType & ReactionType.Explosion) != 0)
+            /*if ((reactionType & ReactionType.Explosion) != 0)
             {
                 reactionType |= ReactionType.Destroy;
-            }
+            }*/
         }
     }
 
@@ -127,11 +130,7 @@ public class ReactionObject : RecycleObject
     protected virtual void CollisionAfterThrow()
     {
         currentState = StateType.None;
-        if ((reactionType & ReactionType.Destroy) != 0)
-        {
-            DestroyReaction();
-        }
-
+        DestroyReaction();
     }
 
     protected void OnCollisionExit(Collision collision)
@@ -149,7 +148,7 @@ public class ReactionObject : RecycleObject
         {
             Boom();
         }
-        else
+        else if((reactionType & ReactionType.Hit) != 0)
         {
             HitReaction(1.0f);
         }
@@ -165,13 +164,15 @@ public class ReactionObject : RecycleObject
 
     protected void DestroyReaction()
     {
-        currentState = StateType.Destroy;
-        Boom();
-        // -- 파괴 동작 코루틴 추가해야됨
-        ReturnToPool();
+        if ((reactionType & ReactionType.Destroy) != 0) 
+        {
+            //currentState = StateType.Destroy;
+            // -- 파괴 동작 코루틴 추가해야됨
+            ReturnToPool();
+        }
     }
 
-    void Boom()
+    protected void Boom()
     {
         if ((reactionType & ReactionType.Explosion) != 0 && currentState != StateType.Boom)
         {
@@ -187,13 +188,15 @@ public class ReactionObject : RecycleObject
                     reactionObj.HitReaction(true);
                     Vector3 dir = obj.transform.position - transform.position;
                     Vector3 power = dir.normalized * explosiveInfo.force + obj.transform.up * explosiveInfo.forceY;
-                    reactionObj.ExplosionReaction(power);
+                    reactionObj.ExplosionShock(power);
+                    reactionObj.HitReaction(true);
                 }
             }
+            DestroyReaction();
         }
     }
 
-    public void ExplosionReaction(Vector3 power)
+    public void ExplosionShock(Vector3 power)
     {
         if ((reactionType & ReactionType.Move) != 0)
         {

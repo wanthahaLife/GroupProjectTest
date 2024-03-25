@@ -15,7 +15,7 @@ public class RemoteBomb : Skill
     {
         if (currentState == StateType.None)
         {
-            DestroyReaction();
+            Boom();
         }
         else
         {

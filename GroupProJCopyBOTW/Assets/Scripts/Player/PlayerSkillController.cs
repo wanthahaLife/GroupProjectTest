@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class PlayerSkillController : MonoBehaviour
 {
@@ -52,16 +54,20 @@ public class PlayerSkillController : MonoBehaviour
 
     void ConnectSkill(SkillName skiilName)
     {
-        // 구현중
+        // 현재 스킬 종류로 설정
         currentSkill = skiilName;
+
+        // 스킬 변경시 델리게이트 연결 해제
+        onSKillAction = null;
+        useSkillAction = null;
+        offSkillAction = null;
+
+        // 설정된 스킬이 현재 발동 중이면 스킬 관련(시작, 사용중, 종료) 델리게이트 연결
+        // 설정된 스킬로 현재사용중인 스킬 연결 (각 스킬이 없으면 null)
         switch (currentSkill)
         {
             case SkillName.RemoteBomb:
-                Debug.Log("변경 : 리모컨 폭탄");
-                //if (!remoteBomb.enabled)
-                //{
-                //    remoteBomb = null;
-                //}
+                currentOnSkill = remoteBomb;
                 if (remoteBomb != null)
                 {
                     onSKillAction = remoteBomb.OnSkillAction;
@@ -71,7 +77,7 @@ public class PlayerSkillController : MonoBehaviour
 
                 break;
             case SkillName.RemoteBomb_Cube:
-                Debug.Log("변경 : 리모컨 폭탄(큐브)");
+                currentOnSkill = remoteBombCube;
                 if (remoteBombCube != null)
                 {
                     onSKillAction = remoteBombCube.OnSkillAction;
@@ -80,7 +86,7 @@ public class PlayerSkillController : MonoBehaviour
                 }
                 break;
             case SkillName.MagnetCatch:
-                Debug.Log("변경 : 마그넷 캐치");
+                currentOnSkill = magnetCatch;
                 if (magnetCatch != null)
                 {
                     onSKillAction = magnetCatch.OnSkillAction;
@@ -98,14 +104,19 @@ public class PlayerSkillController : MonoBehaviour
 
     void OnSkill()
     {
+        // 설정된 스킬별로 동작
         switch (currentSkill)
         {
             case SkillName.RemoteBomb:
-                if (remoteBomb == null)
+                if (remoteBomb == null)     // 리모컨폭탄이 현재 소환되어 있지 않으면
                 {
                     Debug.Log("실행 : 리모컨 폭탄");
-                    remoteBomb = SkillFactory.Instance.GetRemoteBomb();
-                    currentOnSkill = remoteBomb;
+                    remoteBomb = SkillFactory.Instance.GetRemoteBomb(); // 팩토리에서 리모컨폭탄 가져온 뒤 리모컨 폭탄 변수에 설정
+                    currentOnSkill = remoteBomb;                        // 현재 사용중인 스킬은 리모컨폭탄
+                }
+                else
+                {
+                    CancelSkill();          // 리모컨폭탄이 소환되어 있으면 터지면서 스킬 종료
                 }
 
                 break;
@@ -115,6 +126,10 @@ public class PlayerSkillController : MonoBehaviour
                     Debug.Log("실행 : 리모컨 폭탄 큐브");
                     remoteBombCube = SkillFactory.Instance.GetRemoteBomb();
                     currentOnSkill = remoteBombCube;
+                }
+                else
+                {
+                    CancelSkill();
                 }
                 break;
             case SkillName.MagnetCatch:
@@ -130,7 +145,16 @@ public class PlayerSkillController : MonoBehaviour
             case SkillName.TimeLock:
                 break;
         }
+        
         ConnectSkill(currentSkill);
+
+        if (currentOnSkill != null)
+        {
+            currentOnSkill.transform.SetParent(HandRoot);
+            currentOnSkill.transform.position = HandRoot.position;
+            currentOnSkill.transform.forward = player.transform.forward;
+        }
+
         onSKillAction?.Invoke();
     }
 
@@ -138,6 +162,22 @@ public class PlayerSkillController : MonoBehaviour
     {
         offSkillAction?.Invoke();
         currentOnSkill = null;
+        switch (currentSkill)
+        {
+            case SkillName.RemoteBomb:
+                remoteBomb = null;
+                break;
+            case SkillName.RemoteBomb_Cube:
+                remoteBombCube = null;
+                break;
+            case SkillName.MagnetCatch:
+                magnetCatch = null;
+                break;
+            case SkillName.IceMaker:
+                break;
+            case SkillName.TimeLock:
+                break;
+        }
     }
 
 

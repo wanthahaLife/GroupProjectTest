@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     PlayerSkillController skillController;
     HandRootTracker handRootTracker;
     public PlayerSkillController SkillController => skillController;
+    bool IsSkillOn => SkillController.CurrentOnSkill != null;
 
     public Action rightClick;
     public Action leftClick;
@@ -179,19 +180,19 @@ public class Player : MonoBehaviour
 
     private void OnSkill(InputAction.CallbackContext _)
     {
-        switch (selectSkill)
-        {
-            case SkillName.RemoteBomb:
-                
-                break;
-            case SkillName.RemoteBomb_Cube:
-                break;
-        }
         if (!IsPickUp)
         {
+
+            switch (selectSkill)
+            {
+                case SkillName.RemoteBomb:
+                case SkillName.RemoteBomb_Cube:
+                    IsPickUp = !IsSkillOn;
+                    break;
+            }
+            
             onSkill?.Invoke();
             reaction = SkillController.CurrentOnSkill;
-            IsPickUp = true;
         }
     }
 

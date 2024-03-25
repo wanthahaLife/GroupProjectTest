@@ -91,8 +91,7 @@ Transform:
   m_LocalPosition: {x: 0.5, y: 0.9, z: -0.000000039999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5334978965976545838}
+  m_Children: []
   m_Father: {fileID: 4650001696566878778}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &49919407851481380
@@ -221,50 +220,6 @@ Transform:
   - {fileID: 6391038462315854606}
   m_Father: {fileID: 4950653420019693360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &442460324671641408
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5334978965976545838}
-  - component: {fileID: 2231055212899754924}
-  m_Layer: 0
-  m_Name: SkillRoot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5334978965976545838
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 442460324671641408}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 171810410187690241}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2231055212899754924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 442460324671641408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbb95913adc808f498d70163835d3416, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &485776746966366643
 GameObject:
   m_ObjectHideFlags: 0
@@ -6164,7 +6119,7 @@ GameObject:
   - component: {fileID: 2539277228336562461}
   - component: {fileID: 1427526404230176213}
   m_Layer: 0
-  m_Name: SkillRootTracker
+  m_Name: HandRootTracker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6401,7 +6356,7 @@ PrefabInstance:
     - target: {fileID: 4535805138506712805, guid: 5d3350b562450f24fa12cb5619dde849,
         type: 3}
       propertyPath: m_Name
-      value: SkillRoot
+      value: HandRoot
       objectReference: {fileID: 0}
     - target: {fileID: 7136979689916894174, guid: 5d3350b562450f24fa12cb5619dde849,
         type: 3}

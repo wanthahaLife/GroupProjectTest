@@ -28,10 +28,6 @@ public class Skill : ReactionObject
         {
             owner = GameManager.Instance.Player;
         }
-
-
-
-
     }
 
     protected override void OnDisable()
@@ -49,10 +45,6 @@ public class Skill : ReactionObject
         owner.SkillController.onSKillAction = OnSkillAction;
         owner.SkillController.useSkillAction = UseSkillAction;
         owner.SkillController.offSkillAction = OffSkillAction;
-
-        transform.parent = owner.SkillController.HandRoot;
-        transform.position = owner.SkillController.HandRoot.position;
-        transform.forward = owner.transform.forward;
     }
 
     public virtual void UseSkillAction()

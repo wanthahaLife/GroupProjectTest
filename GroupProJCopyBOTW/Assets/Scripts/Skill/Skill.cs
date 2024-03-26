@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -21,6 +22,10 @@ public class Skill : ReactionObject
     public bool canUse = false;
 
     protected Player owner;
+    protected SkillVCam skillVcam;
+
+    protected Action camOn;
+    protected Action camOff;
 
     protected override void Awake()
     {
@@ -34,6 +39,10 @@ public class Skill : ReactionObject
         {
             owner = GameManager.Instance.Player;
         }
+        if(skillVcam == null)
+        {
+            skillVcam = GameManager.Instance.Cam.SkillCam;
+        }
     }
 
     protected override void OnEnable()
@@ -43,23 +52,16 @@ public class Skill : ReactionObject
         {
             owner = GameManager.Instance.Player;
         }
+        if (skillVcam == null)
+        {
+            skillVcam = GameManager.Instance.Cam.SkillCam;
+        }
     }
 
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-
-        owner.SkillController.onSKillAction = null;
-        owner.SkillController.useSkillAction = null;
-        owner.SkillController.offSkillAction = null;
-
-    }
-
+ 
     public virtual void OnSkillAction()
     {
-        owner.SkillController.onSKillAction = OnSkillAction;
-        owner.SkillController.useSkillAction = UseSkillAction;
-        owner.SkillController.offSkillAction = OffSkillAction;
+        
     }
 
     public virtual void UseSkillAction()

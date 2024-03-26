@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class MagnetVCam : SkillVCam
 {
-    protected override void Move()
-    {
-        
-    }
-    protected override void StartSkillCamera()
-    { 
-    }
-
-    protected override void UsingSkillCamera()
+    public void MagnetOnCamera()
     {
         VCam.Priority = 20;
     }

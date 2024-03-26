@@ -63,6 +63,7 @@ public class MagnetCatch : Skill
         }
         activatedSkill = false;
         isMagnetic = false;
+        targetGroup.m_Targets[1].target = owner.transform;
 
     }
 

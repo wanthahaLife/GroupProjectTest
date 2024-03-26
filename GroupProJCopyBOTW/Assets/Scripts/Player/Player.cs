@@ -15,6 +15,11 @@ public class Player : MonoBehaviour
     Vector3 inputDir = Vector3.zero;
     Transform character;
     Transform pickUpRoot;
+    Transform cameraRoot;
+    public Transform CameraRoot
+    {
+        get => cameraRoot;
+    }
     Animator animator;
 
     PlayerSkillController skillController;
@@ -73,6 +78,8 @@ public class Player : MonoBehaviour
         pickUpRoot = transform.GetChild(2);
         pickUpPoint = pickUpRoot.position;
         pickUpPoint.y += pickUpHeightRange;
+
+        cameraRoot = transform.GetComponentInChildren<CameraRootMover>().transform;
 
         rightClick += PickUpObjectDetect;
         onThrow += ThrowObject;

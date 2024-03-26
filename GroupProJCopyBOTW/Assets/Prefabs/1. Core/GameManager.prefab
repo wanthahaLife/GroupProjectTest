@@ -105,6 +105,11 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1909387580722591896, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
+        type: 3}
+      propertyPath: m_Priority
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 5227371019519218591, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_Name
@@ -118,32 +123,32 @@ PrefabInstance:
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.4551983
+      value: 4.8900476
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -16.03361
+      value: -8.985916
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.97635704
+      value: 0.9689416
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.21583599
+      value: 0.24637584
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.011629184
+      value: -0.020586032
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0025707772
+      value: 0.0052344752
       objectReference: {fileID: 0}
     - target: {fileID: 5989723196003678312, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
         type: 3}
@@ -159,6 +164,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8445015366833253152, guid: 6ea1b2515d4c8114ca5e4f16736c5ceb,
+        type: 3}
+      propertyPath: CameraDistance
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

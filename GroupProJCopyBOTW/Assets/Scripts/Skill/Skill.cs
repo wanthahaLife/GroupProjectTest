@@ -28,6 +28,14 @@ public class Skill : ReactionObject
         rigid.isKinematic = true;
     }
 
+    protected virtual void Start()
+    {
+        if(owner == null)
+        {
+            owner = GameManager.Instance.Player;
+        }
+    }
+
     protected override void OnEnable()
     {
         base.OnEnable();

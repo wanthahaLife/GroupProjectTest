@@ -12,7 +12,7 @@ GameObject:
   m_Layer: 0
   m_Name: Destination
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 3936346786652291628, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -92,9 +92,7 @@ MonoBehaviour:
   canUse: 0
   magnetDistance: 50
   playerRotateSpeed: 2
-  moveXSpeed: 5
-  moveYSpeed: 2
-  moveZSpeed: 1
+  targetMoveSpeed: 5
 --- !u!54 &5038291860599361447
 Rigidbody:
   m_ObjectHideFlags: 0

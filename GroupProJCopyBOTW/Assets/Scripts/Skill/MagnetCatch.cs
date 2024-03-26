@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using Unity.VisualScripting;
 using System;
+using UnityEngine.InputSystem;
+
 
 
 
@@ -13,24 +15,25 @@ public class MagnetCatch : Skill
 {
     public float magnetDistance;
     public float playerRotateSpeed = 2.0f;
-    public float moveXSpeed = 5.0f;
-    public float moveYSpeed = 2.0f;
-    public float moveZSpeed = 1.0f;
+    //public float moveXSpeed = 5.0f;
+    public float targetMoveSpeed = 5.0f;
+    //public float moveZSpeed = 1.0f;
 
     bool isMagnetic = false;
     bool activatedSkill = false;
 
-    Vector3 cameraDir = Vector3.zero;
+    Vector2 curMousePos = Vector2.zero;
+    Vector2 preMousePos = Vector2.zero;
 
     Transform destinationX;
 
     Transform target;
+    ReactionObject reactionTarget;
     Vector3 hitPoint;
     PlayerVCam vcam;
     Cinemachine.CinemachineTargetGroup targetGroup;
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
-    readonly Vector3 Top = new Vector3(0f, 1.0f, 0f);
 
     Action<Vector3> onStick;
 
@@ -42,13 +45,24 @@ public class MagnetCatch : Skill
         
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        if(owner != null)
+        {
+            owner.onScroll += SetDestinationDistance;
+        }
+    }
+
     protected override void OnEnable()
     {
         base.OnEnable();
         if(vcam == null)
         {
-            vcam = GameManager.Instance.PlayerCam;
+            vcam = GameManager.Instance.Cam.PlayerCam;
         }
+        activatedSkill = false;
+        isMagnetic = false;
 
     }
 
@@ -56,7 +70,7 @@ public class MagnetCatch : Skill
     {
         if(activatedSkill)
         {
-            MoveTarget();
+            TargetPosition();
         }
     }
 
@@ -71,6 +85,9 @@ public class MagnetCatch : Skill
         StopAllCoroutines();
         if (isMagnetic && !activatedSkill)
         {
+            onStick = reactionTarget.AttachMagnetMove;
+            reactionTarget.AttachMagnet();
+
             destinationX.position = hitPoint;
             destinationX.parent = owner.transform.GetChild(1);      // 플레이어의 CameraRoot를 부모로 설정해서 카메라와 동일한 움직임
 
@@ -78,6 +95,7 @@ public class MagnetCatch : Skill
 
             activatedSkill = true;
 
+            curMousePos = Mouse.current.position.value;
         }
     }
 
@@ -86,11 +104,24 @@ public class MagnetCatch : Skill
         base.OffSkillAction();
         if (activatedSkill)
         {
+            reactionTarget.DettachMagnet();
+
+            onStick = null;
+
+            reactionTarget = null;
             target = null;
             activatedSkill = false;
 
+
             destinationX.parent = transform;
         }
+    }
+
+    void SetDestinationDistance(float scrollY)
+    {
+        Vector3 pos = destinationX.localPosition;
+        pos.z += scrollY;
+        destinationX.localPosition = pos;
     }
 
     IEnumerator TargetCheck()
@@ -101,12 +132,12 @@ public class MagnetCatch : Skill
             target = hit.transform;
             if (target != null)
             {
-                ReactionObject reactionTarget = target.GetComponent<ReactionObject>();
+                reactionTarget = target.GetComponent<ReactionObject>();
                 isMagnetic = (reactionTarget != null) && (reactionTarget.Type == ReactionType.Magnetic);
                 if (isMagnetic)
                 {
                     hitPoint = hit.collider.bounds.center;
-                    onStick = reactionTarget.StickMagnetMove;
+                    //onStick = reactionTarget.StickMagnetMove;
                 }
             }
 
@@ -114,22 +145,19 @@ public class MagnetCatch : Skill
         }
     }
 
-    void MoveTarget()
+    void TargetPosition()
     {
+        //float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
+        Vector3 destDir = (destinationX.position - target.position).normalized;
+        
+        preMousePos = curMousePos;
+        curMousePos = Mouse.current.position.value;
+        Vector2 mouseDir = (curMousePos - preMousePos).normalized;
 
-        float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
-        float dirY = cameraDir.y * moveYSpeed;
-        float dirZ = 0f;
+        Vector3 dir = new Vector3(destDir.x, mouseDir.y, destDir.z);
 
-        Vector3 dir = new Vector3(dirX, dirY, dirZ);
-
-        onStick?.Invoke(dir * Time.fixedDeltaTime);
+        onStick?.Invoke(dir * Time.fixedDeltaTime * targetMoveSpeed);
         // targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
-    }
-
-    void CameraMove(Vector3 pos)
-    {
-        cameraDir = pos;
     }
 
 #if UNITY_EDITOR

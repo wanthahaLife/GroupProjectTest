@@ -58,6 +58,11 @@ public class PlayerVCam : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
+        Move();
+    }
+
+    protected virtual void Move()
+    {
         preMousePos = currMousePos;
         currMousePos = Mouse.current.position.value;
         Vector2 dir = currMousePos - preMousePos;

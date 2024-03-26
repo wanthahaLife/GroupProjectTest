@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class MagnetVCam : SkillVCam
 {
+    protected override void Move()
+    {
+        
+    }
     protected override void StartSkillCamera()
     { 
     }

@@ -75,7 +75,7 @@ public class ReactionObject : RecycleObject
     protected Rigidbody rigid;
 
 
-    bool magnetReaction = false;
+    bool isAttachMagnet = false;
 
     protected virtual void Awake()
     {
@@ -95,28 +95,28 @@ public class ReactionObject : RecycleObject
         ObjectHp = objectMaxHp;
     }
 
-    private void Start()
+    public void AttachMagnetMove(Vector3 pos)
     {
-        Player player = GameManager.Instance.Player;
-        if (player != null)
+        //Debug.Log(pos);
+        rigid.MovePosition(rigid.position + pos);
+    }
+
+    public void AttachMagnet()
+    {
+        if(IsMagnetic)
         {
-        //    player.onThrow += Throw;
-        }
-        else
-        {
-            Debug.LogWarning("플레이어가 없습니다.");
+            isAttachMagnet = true;
+            rigid.useGravity = false;
         }
     }
 
-    private void FixedUpdate()
+    public void DettachMagnet()
     {
-        
-    }
-    
-
-    public void StickMagnetMove(Vector3 pos)
-    {
-
+        if (IsMagnetic)
+        {
+            isAttachMagnet = false;
+            rigid.useGravity = true;
+        }
     }
 
     protected void OnCollisionEnter(Collision collision)
@@ -135,7 +135,7 @@ public class ReactionObject : RecycleObject
 
     protected void OnCollisionExit(Collision collision)
     {
-        if (magnetReaction)
+        if (isAttachMagnet)
         {
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;

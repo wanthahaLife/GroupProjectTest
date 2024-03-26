@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     Action onThrow;
     public Action onPickUp;
     public Action onCancel;
+    public Action<float> onScroll;
 
     SkillName selectSkill = SkillName.RemoteBomb;
     SkillName SelectSkill
@@ -101,12 +102,16 @@ public class Player : MonoBehaviour
 
         inputActions.Player.Throw.performed += OnThrow;
         inputActions.Player.Cancel.performed += OnCancel;
+
+        inputActions.Player.ScrollY.performed += OnScrollY;
     }
 
 
 
     private void OnDisable()
     {
+        inputActions.Player.ScrollY.performed -= OnScrollY;
+
         inputActions.Player.Cancel.performed -= OnCancel;
         inputActions.Player.Throw.performed -= OnThrow;
 
@@ -274,6 +279,11 @@ public class Player : MonoBehaviour
         inputDir.z = tempDir.y;
         isMoveInput = !context.canceled;
         animator.SetBool(Hash_IsMove, !context.canceled);
+    }
+
+    private void OnScrollY(InputAction.CallbackContext context)
+    {
+        onScroll?.Invoke(context.ReadValue<float>()*0.02f);
     }
 
     private void Update()

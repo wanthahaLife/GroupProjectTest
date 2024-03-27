@@ -225,7 +225,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.15, y: 0.5, z: 5.13}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -276,7 +276,7 @@ MonoBehaviour:
     damage: 3
   Weight: 1
   objectMaxHp: 1
-  reactionType: 4
+  reactionType: 7
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,6 +1164,21 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 8990424822531121866}
+    - target: {fileID: 6001409722640638556, guid: 47188e4d8fafc0d47b8595eb0884c778,
+        type: 3}
+      propertyPath: CameraDistance
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8458946885630750996, guid: 47188e4d8fafc0d47b8595eb0884c778,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.8639872
+      objectReference: {fileID: 0}
+    - target: {fileID: 8458946885630750996, guid: 47188e4d8fafc0d47b8595eb0884c778,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.166838
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1187,8 +1202,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f1b8cf4f46e6a24881d6bdcb8de8083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateAngle: 180
-  maxAngle: 30
+  rotateSpeed: 90
+  maxUpAngle: 30
+  maxDownAngle: 15
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

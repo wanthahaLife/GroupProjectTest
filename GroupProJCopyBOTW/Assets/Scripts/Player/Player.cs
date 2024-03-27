@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
             for (int i = 0; i < hit.Length; i++)
             {
                 reaction = hit[i].transform.GetComponent<ReactionObject>();
-                if (reaction != null && (reaction.Type & ReactionType.Throw) != 0)
+                if (reaction != null && reaction.IsThrowable)
                 {
                     PickUpObject();
                     break;
@@ -314,7 +314,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void LookForwardPlayer(Vector3 rotate)
+    public void LookForwardPlayer(Vector3 rotate)
     {
         //rotate.x = 0;
         //rotate.z = 0;

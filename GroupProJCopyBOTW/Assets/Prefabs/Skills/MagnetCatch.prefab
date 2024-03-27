@@ -92,7 +92,7 @@ MonoBehaviour:
   canUse: 0
   magnetDistance: 50
   playerRotateSpeed: 2
-  targetMoveSpeed: 10
+  targetMoveSpeed: 15
 --- !u!54 &5038291860599361447
 Rigidbody:
   m_ObjectHideFlags: 0

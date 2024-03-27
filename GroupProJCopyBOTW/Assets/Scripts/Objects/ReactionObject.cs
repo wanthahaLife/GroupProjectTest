@@ -52,12 +52,12 @@ public class ReactionObject : RecycleObject
         Magnet,
     }
 
-    bool IsMoveable => (reactionType & ReactionType.Move) != 0;
-    bool IsThrowable => (reactionType & ReactionType.Throw) != 0;
-    bool IsMagnetic => (reactionType & ReactionType.Magnetic) != 0;
-    bool IsDestructible => (reactionType & ReactionType.Destroy) != 0;
-    bool IsExplosive => (reactionType & ReactionType.Explosion) != 0;
-    bool IsSkill => (reactionType & ReactionType.Skill) != 0;
+    public bool IsMoveable => (reactionType & ReactionType.Move) != 0;
+    public bool IsThrowable => (reactionType & ReactionType.Throw) != 0;
+    public bool IsMagnetic => (reactionType & ReactionType.Magnetic) != 0;
+    public bool IsDestructible => (reactionType & ReactionType.Destroy) != 0;
+    public bool IsExplosive => (reactionType & ReactionType.Explosion) != 0;
+    public bool IsSkill => (reactionType & ReactionType.Skill) != 0;
 
 
     protected StateType currentState = StateType.None;
@@ -66,9 +66,6 @@ public class ReactionObject : RecycleObject
     //bool isThrow = false;
 
     public ReactionType reactionType;
-    public ReactionType Type => reactionType;
-
-
 
     protected Transform originParent;
 
@@ -95,10 +92,12 @@ public class ReactionObject : RecycleObject
         ObjectHp = objectMaxHp;
     }
 
-    public void AttachMagnetMove(Vector3 pos)
+    public void AttachMagnetMove(Vector3 pos, Vector3 euler)
     {
         //Debug.Log(pos);
         rigid.MovePosition(rigid.position + pos);
+        
+        rigid.MoveRotation(Quaternion.Euler(euler));
     }
 
     public void AttachMagnet()

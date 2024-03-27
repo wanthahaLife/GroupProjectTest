@@ -8,8 +8,10 @@ public class CameraRootMover : MonoBehaviour
     /// <summary>
     /// 회전 속도
     /// </summary>
-    public float rotateAngle = 180.0f;
-    public float maxAngle = 30.0f;
+    public float rotateSpeed = 180.0f;
+
+    public float maxUpAngle = 30.0f;
+    public float maxDownAngle = 15.0f;
 
 
     float angleY = 0f;
@@ -35,9 +37,9 @@ public class CameraRootMover : MonoBehaviour
         currMousePos = Mouse.current.position.value;
         Vector2 dir = currMousePos - preMousePos;
         dir = dir.normalized;
-        angleY += dir.x * Time.deltaTime * rotateAngle;
-        angleX -= dir.y * Time.deltaTime * rotateAngle;
-        angleX = Mathf.Clamp(angleX, -maxAngle, maxAngle);
+        angleY += dir.x * Time.deltaTime * rotateSpeed;
+        angleX -= dir.y * Time.deltaTime * rotateSpeed;
+        angleX = Mathf.Clamp(angleX, -maxDownAngle, maxUpAngle);
 
 
         Quaternion rotate = Quaternion.Euler(angleX, angleY, 0);

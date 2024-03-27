@@ -197,12 +197,19 @@ public class Player : MonoBehaviour
 
     void CancelSkill()
     {
-        if(IsPickUp && reaction != null)
+        // 취소키 야숨에서 확인하기
+        /*if(IsPickUp && reaction != null)
         {
             IsPickUp = false;
             reaction.Drop();
             reaction = null;
+        }*/
+        if (IsSkillOn)
+        {
+            IsPickUp = false;
+            reaction = null;
         }
+        
     }
 
     private void OnSkill(InputAction.CallbackContext _)

@@ -21,6 +21,8 @@ public class Skill : ReactionObject
     public float CurrentCoolTime => currCoolTime;
     public bool canUse = false;
 
+    protected bool isActivate = false;
+
     protected Player owner;
     protected SkillVCam skillVcam;
 
@@ -35,11 +37,11 @@ public class Skill : ReactionObject
 
     protected virtual void Start()
     {
-        if(owner == null)
+        if (owner == null)
         {
             owner = GameManager.Instance.Player;
         }
-        if(skillVcam == null)
+        if (skillVcam == null)
         {
             skillVcam = GameManager.Instance.Cam.SkillCam;
         }
@@ -52,25 +54,63 @@ public class Skill : ReactionObject
         {
             owner = GameManager.Instance.Player;
         }
-        if (skillVcam == null)
+        if (skillVcam != null)
+        {
+            camOn = skillVcam.OnSkillCamera;
+            camOff = skillVcam.OffSkillCamera;
+        }
+        else
         {
             skillVcam = GameManager.Instance.Cam.SkillCam;
         }
     }
 
- 
-    public virtual void OnSkillAction()
+    protected override void OnDisable()
     {
-        
+        base.OnDisable();
+        isActivate = false;
     }
 
-    public virtual void UseSkillAction()
+
+    public void OnSkill()
     {
+        if (!isActivate)
+        {
+            OnSKillAction();
+        }
+    }
+
+    protected virtual void OnSKillAction()
+    {
+        camOn?.Invoke();
 
     }
 
-    public virtual void OffSkillAction()
+    public void UseSkill()
     {
+        if (!isActivate)
+        {
+            UseSkillAction();
+        }
+    }
+
+    protected virtual void UseSkillAction()
+    {
+        camOff?.Invoke();
+        isActivate = true;
+
+    }
+
+    public void OffSkill()
+    {
+        OffSKillAction();
+    }
+
+    protected virtual void OffSKillAction()
+    {
+        camOff?.Invoke();
+        isActivate = false;
+        ReturnToPool();
 
     }
 }

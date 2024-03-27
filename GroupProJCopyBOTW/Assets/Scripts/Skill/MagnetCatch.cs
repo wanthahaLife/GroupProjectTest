@@ -3,6 +3,8 @@ using UnityEngine;
 using Unity.VisualScripting;
 using System;
 using UnityEngine.InputSystem;
+using System.Security.Cryptography;
+
 
 
 
@@ -20,7 +22,6 @@ public class MagnetCatch : Skill
     //public float moveZSpeed = 1.0f;
 
     bool isMagnetic = false;
-    bool activatedSkill = false;
 
     Vector2 curMousePos = Vector2.zero;
     Vector2 preMousePos = Vector2.zero;
@@ -30,12 +31,14 @@ public class MagnetCatch : Skill
     Transform target;
     ReactionObject reactionTarget;
     Vector3 hitPoint;
-    PlayerVCam vcam;
+    MagnetVCam magnetVcam;
     Cinemachine.CinemachineTargetGroup targetGroup;
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
     Action<Vector3> onStick;
+    Action magnetCamOn;
+    Action magnetCamOff;
 
     protected override void Awake()
     {
@@ -45,47 +48,80 @@ public class MagnetCatch : Skill
         
     }
 
+    
     protected override void Start()
     {
         base.Start();
+
         if(owner != null)
         {
-            owner.onScroll += SetDestinationDistance;
+            owner.onScroll += SetDestinationScroll;
         }
+        
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
-        if(vcam == null)
+        if(magnetVcam == null)
         {
-            vcam = GameManager.Instance.Cam.PlayerCam;
+            magnetVcam = GameManager.Instance.Cam.MagnetCam;
         }
-        activatedSkill = false;
+
+        magnetCamOn = magnetVcam.OnSkillCamera;
+        magnetCamOff = magnetVcam.OffSkillCamera;
+
+        isActivate = false;
         isMagnetic = false;
         targetGroup.m_Targets[1].target = owner.transform;
 
+        StartCoroutine(TargetCheck());
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        StopAllCoroutines();
+        onStick = null;
+        reactionTarget = null;
+        target = null;
     }
 
     private void FixedUpdate()
     {
-        if(activatedSkill)
+        if(isActivate)
         {
             TargetPosition();
         }
     }
+    void TargetPosition()
+    {
+        //float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
+        Vector3 destDir = (destinationX.position - target.position).normalized;
 
-    public override void OnSkillAction()
-    {
-        base.OnSkillAction();
-        StartCoroutine(TargetCheck());
+        preMousePos = curMousePos;
+        curMousePos = Mouse.current.position.value;
+        Vector2 mouseDir = (curMousePos - preMousePos).normalized;
+        
+        Vector3 dir = new Vector3(destDir.x, mouseDir.y, destDir.z);
+
+        onStick?.Invoke(dir * Time.fixedDeltaTime * targetMoveSpeed);
+        // targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
     }
-    public override void UseSkillAction()
+
+    protected override void OnSKillAction()
     {
-        base.UseSkillAction();
+        base.OnSKillAction();
+        
+    }
+    protected override void UseSkillAction()
+    {
         StopAllCoroutines();
-        if (isMagnetic && !activatedSkill)
+        Debug.Log(isMagnetic);
+        if (isMagnetic)
         {
+            base.UseSkillAction();
+            magnetCamOn?.Invoke();
             onStick = reactionTarget.AttachMagnetMove;
             reactionTarget.AttachMagnet();
 
@@ -94,31 +130,30 @@ public class MagnetCatch : Skill
 
             targetGroup.m_Targets[0].target = target;
 
-            activatedSkill = true;
-
             curMousePos = Mouse.current.position.value;
         }
     }
 
-    public override void OffSkillAction()
+    protected override void OffSKillAction()
     {
-        base.OffSkillAction();
-        if (activatedSkill)
+        magnetCamOff?.Invoke();
+        if (reactionTarget != null)
         {
             reactionTarget.DettachMagnet();
-
-            onStick = null;
-
-            reactionTarget = null;
-            target = null;
-            activatedSkill = false;
-
-
-            destinationX.parent = transform;
         }
+
+        onStick = null;
+
+        reactionTarget = null;
+        target = null;
+        isActivate = false;
+
+        destinationX.parent = transform;
+
+        base.OffSKillAction();
     }
 
-    void SetDestinationDistance(float scrollY)
+    void SetDestinationScroll(float scrollY)
     {
         Vector3 pos = destinationX.localPosition;
         pos.z += scrollY;
@@ -146,20 +181,7 @@ public class MagnetCatch : Skill
         }
     }
 
-    void TargetPosition()
-    {
-        //float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
-        Vector3 destDir = (destinationX.position - target.position).normalized;
-        
-        preMousePos = curMousePos;
-        curMousePos = Mouse.current.position.value;
-        Vector2 mouseDir = (curMousePos - preMousePos).normalized;
 
-        Vector3 dir = new Vector3(destDir.x, mouseDir.y, destDir.z);
-
-        onStick?.Invoke(dir * Time.fixedDeltaTime * targetMoveSpeed);
-        // targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
-    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -178,15 +200,15 @@ public class MagnetCatch : Skill
 
     public void TestStartSkill()
     {
-        OnSkillAction();
+        OnSkill();
     }
     public void TestUseSkill()
     {
-        UseSkillAction();
+        UseSkill();
     }
     public void TestFinishSkill()
     {
-        OffSkillAction();
+        OffSkill();
     }
 #endif
 }

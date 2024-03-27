@@ -245,8 +245,14 @@ public class ReactionObject : RecycleObject
 
     protected void ReturnToPool()
     {
+        ReturnAction();
         transform.SetParent(originParent);
         gameObject.SetActive(false);
+    }
+
+    protected virtual void ReturnAction()
+    {
+
     }
 
     public void Drop()

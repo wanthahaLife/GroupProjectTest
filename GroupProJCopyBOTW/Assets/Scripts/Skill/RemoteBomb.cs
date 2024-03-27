@@ -11,19 +11,20 @@ public class RemoteBomb : Skill
         //PickUp();
     }
 
-    public override void OnSkillAction()
+    protected override void OnSKillAction()
     {
         if (currentState == StateType.None)
         {
             Boom();
         }
-        else
-        {
-            base.OnSkillAction();
-        }
     }
 
-    public override void OffSkillAction()
+    protected override void UseSkillAction()
+    {
+        // 아무행동도 안하기
+    }
+
+    protected override void OffSKillAction()
     {
         if(currentState == StateType.PickUp)
         {
@@ -43,23 +44,6 @@ public class RemoteBomb : Skill
         Gizmos.DrawWireSphere(transform.position, explosiveInfo.boomRange);
 
     }
-
-    public void TestSkill()
-    {
-        OnSkillAction();
-    }
-
-    public void TestOnSkill()
-    {
-        UseSkillAction();
-    }
-
-    public void TestRemoteOn()
-    {
-        //RemoteOn();
-    }
-
-
 
 #endif
 }

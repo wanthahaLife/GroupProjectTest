@@ -15,15 +15,15 @@ using UnityEditor;
 
 public class MagnetCatch : Skill
 {
-    public float magnetDistance;
-    public float playerRotateSpeed = 2.0f;
-    //public float moveXSpeed = 5.0f;
+    [Header("마그넷캐치 데이터")]
+    public float magnetDistance = 5.0f;
     public float targetMoveSpeed = 5.0f;
-    public float smoothness = 1.0f;
-    //public float moveZSpeed = 1.0f;
+    public float verticalSpeed = 2.0f;
+    public float horizontalDistanceAtOnce = 0.2f;
 
     bool isMagnetic = false;
-    bool isMouseUp = false;
+
+    float preYDir = 0;
 
     Vector2 curMousePos = Vector2.zero;
     Vector2 preMousePos = Vector2.zero;
@@ -71,11 +71,14 @@ public class MagnetCatch : Skill
             magnetVcam = GameManager.Instance.Cam.MagnetCam;
         }
 
-        magnetCamOn = magnetVcam.OnSkillCamera;
-        magnetCamOff = magnetVcam.OffSkillCamera;
 
         isActivate = false;
         isMagnetic = false;
+
+        magnetCamOn = magnetVcam.OnSkillCamera;
+        magnetCamOn += () => magnetVcam.SetLookAtTransform(targetGroup.transform);
+        magnetCamOff = magnetVcam.OffSkillCamera;
+
         targetGroup.m_Targets[1].target = owner.transform;
 
         StartCoroutine(TargetCheck());
@@ -94,9 +97,12 @@ public class MagnetCatch : Skill
         if(isActivate)
         {
             // 플레이어의 방향 설정
+            Vector3 euler = owner.transform.rotation.eulerAngles;
             owner.LookForwardPlayer(Camera.main.transform.forward);
-            DestinationMover();
+            euler = owner.transform.rotation.eulerAngles - euler;
 
+            DestinationMover();
+            reactionTarget.AttachRotate(euler);
         }
     }
     void DestinationMover()
@@ -105,10 +111,9 @@ public class MagnetCatch : Skill
         preMousePos = curMousePos;
         curMousePos = Mouse.current.position.value;
         Vector2 mouseDir = (curMousePos - preMousePos).normalized;
-        bool isCurrentMouseUp = mouseDir.y > 0;
-        if(isMouseUp && isCurrentMouseUp)
+        if(mouseDir.y * preYDir >= 0f)
         {
-            targetDestination.position += new Vector3(0, mouseDir.y * Time.fixedDeltaTime * targetMoveSpeed, 0);
+            targetDestination.position += new Vector3(0, mouseDir.y * Time.fixedDeltaTime * verticalSpeed, 0);
         }
         else
         {
@@ -116,11 +121,8 @@ public class MagnetCatch : Skill
             pos.y = target.position.y;
             targetDestination.position = pos;
         }
-        
-        
 
-        //Quaternion lookRotation = Quaternion.LookRotation(owner.transform.forward);
-        Vector3 rotate = targetOriginRotate - owner.transform.forward;
+        preYDir = mouseDir.y > 0 ? 1 : -1;
     }
 
     protected override void OnSKillAction()
@@ -170,7 +172,8 @@ public class MagnetCatch : Skill
     void SetDestinationScroll(float scrollY)
     {
         Vector3 pos = targetDestination.localPosition;
-        pos.z += scrollY;
+        float y = scrollY > 0 ? 1 : -1;
+        pos.z += y * horizontalDistanceAtOnce;
         targetDestination.localPosition = pos;
     }
 

@@ -31,6 +31,7 @@ public class ReactionObject : RecycleObject
         public float damage = 3.0f;
     }
 
+    [Header("반응형오브젝트 데이터")]
     public ExplosiveObject explosiveInfo;
 
     public float Weight = 1.0f;
@@ -82,9 +83,9 @@ public class ReactionObject : RecycleObject
 
     float attachMoveSpeed;
 
-    Transform destination;
+    Transform magentDestination;
 
-    bool IsAttachMagnet => destination != null;
+    bool IsAttachMagnet => magentDestination != null;
 
     protected virtual void Awake()
     {
@@ -114,14 +115,14 @@ public class ReactionObject : RecycleObject
 
     public void AttachMagnetMove()
     {
-        Vector3 dir = destination.position - rigid.position;
+        Vector3 dir = magentDestination.position - rigid.position;
         if (dir.sqrMagnitude > 0.001f * attachMoveSpeed)
         {
             rigid.MovePosition(rigid.position + Time.fixedDeltaTime * attachMoveSpeed * dir.normalized);
         }
         else
         {
-            rigid.MovePosition(destination.position);
+            rigid.MovePosition(magentDestination.position);
         }
     }
 
@@ -130,7 +131,7 @@ public class ReactionObject : RecycleObject
         if(IsMagnetic)
         {
             rigid.useGravity = false;
-            this.destination = destination;
+            magentDestination = destination;
             attachMoveSpeed = moveSpeed;
         }
     }
@@ -140,8 +141,13 @@ public class ReactionObject : RecycleObject
         if (IsMagnetic)
         {
             rigid.useGravity = true;
-            destination = null;
+            magentDestination = null;
         }
+    }
+
+    public void AttachRotate(Vector3 euler)
+    {
+        rigid.MoveRotation(Quaternion.Euler(rigid.rotation.eulerAngles + euler));
     }
 
     protected void OnCollisionEnter(Collision collision)

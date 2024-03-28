@@ -11,13 +11,13 @@ public class SkillVCam : PlayerVCam
     public float cameraSpeed = 10.0f;
 
 
-    public void OnSkillCamera()
+    public virtual void OnSkillCamera()
     {
         // 스킬 사용하기 위한 카메라 움직임
         VCam.Priority = 20;
     }
 
-    public void OffSkillCamera()
+    public virtual void OffSkillCamera()
     {
         // 원래 카메라로 돌아가기
         VCam.Priority = 1;

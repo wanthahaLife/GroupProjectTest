@@ -175,9 +175,9 @@ MonoBehaviour:
   coolTime: 1
   canUse: 0
   magnetDistance: 50
-  playerRotateSpeed: 2
   targetMoveSpeed: 10
-  smoothness: 3
+  verticalSpeed: 10
+  horizontalDistanceAtOnce: 0.2
 --- !u!54 &5038291860599361447
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -254,11 +254,11 @@ MonoBehaviour:
   m_UpdateMethod: 2
   m_Targets:
   - target: {fileID: 0}
-    weight: 1
-    radius: 0
+    weight: 1.5
+    radius: 1
   - target: {fileID: 0}
     weight: 1
-    radius: 0
+    radius: 3
 --- !u!1 &6665580953108221506
 GameObject:
   m_ObjectHideFlags: 0

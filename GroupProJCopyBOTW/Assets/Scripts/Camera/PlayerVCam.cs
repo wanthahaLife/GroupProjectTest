@@ -14,7 +14,7 @@ public class PlayerVCam : MonoBehaviour
     protected Cinemachine3rdPersonFollow personFollow;
     public Vector3 Offset => personFollow.ShoulderOffset;
 
-    Player player;
+    protected Player player;
 
     readonly protected Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
@@ -27,19 +27,24 @@ public class PlayerVCam : MonoBehaviour
         personFollow = vCam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
     }
 
-    protected virtual void Start()
+    void Start()
     {
         player = GameManager.Instance.Player;
         if (player != null )
         {
-            cameraRoot = player.CameraRoot;
-            vCam.Follow = cameraRoot;
+            FllowSelector();
         }
         else
         {
             Debug.LogWarning("Player가 없습니다.");
         }
 
+    }
+
+    protected virtual void FllowSelector()
+    {
+        cameraRoot = player.CameraRoot;
+        vCam.Follow = cameraRoot;
     }
 
     public Vector3 GetWorldPositionCenter()

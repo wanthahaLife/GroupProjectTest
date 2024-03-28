@@ -22,7 +22,16 @@ public enum ReactionType
 [RequireComponent(typeof(Rigidbody))]
 public class ReactionObject : RecycleObject
 {
-    [SerializeField] protected ExplosiveObject explosiveInfo;
+    [Serializable]
+    public class ExplosiveObject
+    {
+        public float force = 4.0f;
+        public float forceY = 5.0f;
+        public float boomRange = 3.0f;
+        public float damage = 3.0f;
+    }
+
+    public ExplosiveObject explosiveInfo;
 
     public float Weight = 1.0f;
     protected float reducePower = 1.0f;
@@ -71,8 +80,11 @@ public class ReactionObject : RecycleObject
 
     protected Rigidbody rigid;
 
+    float attachMoveSpeed;
 
-    bool isAttachMagnet = false;
+    Transform destination;
+
+    bool IsAttachMagnet => destination != null;
 
     protected virtual void Awake()
     {
@@ -92,21 +104,34 @@ public class ReactionObject : RecycleObject
         ObjectHp = objectMaxHp;
     }
 
-    public void AttachMagnetMove(Vector3 pos, Vector3 euler, float speed)
+    private void FixedUpdate()
     {
-        Vector3 dir = (pos - rigid.position).normalized;
-        if(dir.sqrMagnitude > 0.1f)
-            rigid.MovePosition(rigid.position + Time.fixedDeltaTime * dir * speed);
-        
-        //rigid.MoveRotation(Quaternion.Euler(euler));
+        if (IsAttachMagnet)
+        {
+            AttachMagnetMove();
+        }
     }
 
-    public void AttachMagnet()
+    public void AttachMagnetMove()
+    {
+        Vector3 dir = destination.position - rigid.position;
+        if (dir.sqrMagnitude > 0.001f * attachMoveSpeed)
+        {
+            rigid.MovePosition(rigid.position + Time.fixedDeltaTime * attachMoveSpeed * dir.normalized);
+        }
+        else
+        {
+            rigid.MovePosition(destination.position);
+        }
+    }
+
+    public void AttachMagnet(Transform destination, float moveSpeed)
     {
         if(IsMagnetic)
         {
-            isAttachMagnet = true;
             rigid.useGravity = false;
+            this.destination = destination;
+            attachMoveSpeed = moveSpeed;
         }
     }
 
@@ -114,8 +139,8 @@ public class ReactionObject : RecycleObject
     {
         if (IsMagnetic)
         {
-            isAttachMagnet = false;
             rigid.useGravity = true;
+            destination = null;
         }
     }
 
@@ -135,7 +160,7 @@ public class ReactionObject : RecycleObject
 
     protected void OnCollisionExit(Collision collision)
     {
-        if (isAttachMagnet)
+        if (IsAttachMagnet)
         {
             rigid.velocity = Vector3.zero;
             rigid.angularVelocity = Vector3.zero;
@@ -288,11 +313,3 @@ public class ReactionObject : RecycleObject
 
 }
 
-[Serializable]
-public class ExplosiveObject
-{
-    public float force = 4.0f;
-    public float forceY = 5.0f;
-    public float boomRange = 3.0f;
-    public float damage = 3.0f;
-}

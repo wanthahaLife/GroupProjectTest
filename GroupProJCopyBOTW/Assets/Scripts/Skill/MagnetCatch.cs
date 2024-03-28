@@ -23,11 +23,12 @@ public class MagnetCatch : Skill
     //public float moveZSpeed = 1.0f;
 
     bool isMagnetic = false;
+    bool isMouseUp = false;
 
     Vector2 curMousePos = Vector2.zero;
     Vector2 preMousePos = Vector2.zero;
 
-    Transform destination;
+    Transform targetDestination;
 
     Transform target;
     ReactionObject reactionTarget;
@@ -39,14 +40,13 @@ public class MagnetCatch : Skill
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
-    Action<Vector3, Vector3, float> onStick;
     Action magnetCamOn;
     Action magnetCamOff;
 
     protected override void Awake()
     {
         base.Awake();
-        destination = transform.GetChild(1);
+        targetDestination = transform.GetChild(1);
         targetGroup = GetComponentInChildren<Cinemachine.CinemachineTargetGroup>();
         
     }
@@ -85,7 +85,6 @@ public class MagnetCatch : Skill
     {
         base.OnDisable();
         StopAllCoroutines();
-        onStick = null;
         reactionTarget = null;
         target = null;
     }
@@ -96,23 +95,32 @@ public class MagnetCatch : Skill
         {
             // 플레이어의 방향 설정
             owner.LookForwardPlayer(Camera.main.transform.forward);
+            DestinationMover();
 
-            TargetPosition();
         }
     }
-    void TargetPosition()
+    void DestinationMover()
     {
-        // 시작하면 트랜스폼을 넘겨주도록 변경
-        // 픽스드 업데이트 반응 오브젝트 안에서 처리
+
         preMousePos = curMousePos;
         curMousePos = Mouse.current.position.value;
         Vector2 mouseDir = (curMousePos - preMousePos).normalized;
-        destination.position += new Vector3(0, mouseDir.y * Time.fixedDeltaTime * targetMoveSpeed, 0);
-        //Vector3 dir = ;
+        bool isCurrentMouseUp = mouseDir.y > 0;
+        if(isMouseUp && isCurrentMouseUp)
+        {
+            targetDestination.position += new Vector3(0, mouseDir.y * Time.fixedDeltaTime * targetMoveSpeed, 0);
+        }
+        else
+        {
+            Vector3 pos = targetDestination.position;
+            pos.y = target.position.y;
+            targetDestination.position = pos;
+        }
+        
+        
 
         //Quaternion lookRotation = Quaternion.LookRotation(owner.transform.forward);
         Vector3 rotate = targetOriginRotate - owner.transform.forward;
-            onStick?.Invoke(destination.position, Vector3.zero, targetMoveSpeed);
     }
 
     protected override void OnSKillAction()
@@ -127,17 +135,17 @@ public class MagnetCatch : Skill
             StopAllCoroutines();
             base.UseSkillAction();
             magnetCamOn?.Invoke();
-            onStick = reactionTarget.AttachMagnetMove;
-            reactionTarget.AttachMagnet();
 
-            destination.position = hitPoint;
-            destination.parent = owner.transform;      // 목적지의 부모를 플레이어로 설정해서 타켓을 플레이어의 정면에 위치하게하기
+            targetDestination.position = hitPoint;
+            targetDestination.parent = owner.transform;      // 목적지의 부모를 플레이어로 설정해서 타켓을 플레이어의 정면에 위치하게하기
 
             targetGroup.m_Targets[0].target = target;
 
             targetOriginRotate = target.rotation.eulerAngles;
 
             curMousePos = Mouse.current.position.value;
+
+            reactionTarget.AttachMagnet(targetDestination, targetMoveSpeed);
         }
     }
 
@@ -149,22 +157,21 @@ public class MagnetCatch : Skill
             reactionTarget.DettachMagnet();
         }
 
-        onStick = null;
 
         reactionTarget = null;
         target = null;
         isActivate = false;
 
-        destination.parent = transform;
+        targetDestination.parent = transform;
 
         base.OffSKillAction();
     }
 
     void SetDestinationScroll(float scrollY)
     {
-        Vector3 pos = destination.localPosition;
+        Vector3 pos = targetDestination.localPosition;
         pos.z += scrollY;
-        destination.localPosition = pos;
+        targetDestination.localPosition = pos;
     }
 
     IEnumerator TargetCheck()
@@ -180,8 +187,8 @@ public class MagnetCatch : Skill
                 isMagnetic = (reactionTarget != null) && (reactionTarget.IsMagnetic);
                 if (isMagnetic)
                 {
-                    hitPoint = hit.collider.bounds.center;
-                    //onStick = reactionTarget.StickMagnetMove;
+                    //hitPoint = hit.collider.bounds.center;
+                    hitPoint = hit.point;
                 }
             }
 

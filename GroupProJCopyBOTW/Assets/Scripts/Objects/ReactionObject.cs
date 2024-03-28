@@ -92,12 +92,13 @@ public class ReactionObject : RecycleObject
         ObjectHp = objectMaxHp;
     }
 
-    public void AttachMagnetMove(Vector3 pos, Vector3 euler)
+    public void AttachMagnetMove(Vector3 pos, Vector3 euler, float speed)
     {
-        //Debug.Log(pos);
-        rigid.MovePosition(rigid.position + pos);
+        Vector3 dir = (pos - rigid.position).normalized;
+        if(dir.sqrMagnitude > 0.1f)
+            rigid.MovePosition(rigid.position + Time.fixedDeltaTime * dir * speed);
         
-        rigid.MoveRotation(Quaternion.Euler(euler));
+        //rigid.MoveRotation(Quaternion.Euler(euler));
     }
 
     public void AttachMagnet()

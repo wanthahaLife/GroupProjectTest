@@ -19,6 +19,7 @@ public class MagnetCatch : Skill
     public float playerRotateSpeed = 2.0f;
     //public float moveXSpeed = 5.0f;
     public float targetMoveSpeed = 5.0f;
+    public float smoothness = 1.0f;
     //public float moveZSpeed = 1.0f;
 
     bool isMagnetic = false;
@@ -38,7 +39,7 @@ public class MagnetCatch : Skill
 
     readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
-    Action<Vector3, Vector3> onStick;
+    Action<Vector3, Vector3, float> onStick;
     Action magnetCamOn;
     Action magnetCamOff;
 
@@ -101,20 +102,17 @@ public class MagnetCatch : Skill
     }
     void TargetPosition()
     {
-        //float dirX = Camera.main.ViewportToWorldPoint(Center).x - target.position.x * moveXSpeed;
-        Vector3 destDir = (destination.position - target.position).normalized;
-
+        // 시작하면 트랜스폼을 넘겨주도록 변경
+        // 픽스드 업데이트 반응 오브젝트 안에서 처리
         preMousePos = curMousePos;
         curMousePos = Mouse.current.position.value;
         Vector2 mouseDir = (curMousePos - preMousePos).normalized;
-        
-        Vector3 dir = new Vector3(destDir.x, mouseDir.y, destDir.z);
-        //Quaternion lookRotation = Quaternion.LookRotation(owner.transform.forward);
-        Vector3 rotate = targetOriginRotate + owner.transform.forward;
-        Debug.Log(targetOriginRotate);
+        destination.position += new Vector3(0, mouseDir.y * Time.fixedDeltaTime * targetMoveSpeed, 0);
+        //Vector3 dir = ;
 
-        onStick?.Invoke(dir * Time.fixedDeltaTime * targetMoveSpeed, rotate);
-        // targetRigid.MovePosition(targetRigid.position + dir * Time.fixedDeltaTime);
+        //Quaternion lookRotation = Quaternion.LookRotation(owner.transform.forward);
+        Vector3 rotate = targetOriginRotate - owner.transform.forward;
+            onStick?.Invoke(destination.position, Vector3.zero, targetMoveSpeed);
     }
 
     protected override void OnSKillAction()

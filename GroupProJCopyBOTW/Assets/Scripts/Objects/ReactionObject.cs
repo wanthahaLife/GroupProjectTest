@@ -146,6 +146,15 @@ public class ReactionObject : RecycleObject
     protected Transform originParent;
 
     /// <summary>
+    /// 원래 회전 마찰력 (마그넷캐치 시 변경내용 원래대로 되돌리기 위함)
+    /// </summary>
+    protected float originAngularDrag;
+    /// <summary>
+    /// 원래 마찰력 (마그넷캐치 시 변경내용 원래대로 되돌리기 위함)
+    /// </summary>
+    protected float originDrag;
+
+    /// <summary>
     /// 자석에 붙었을 때 이동속도 (자석스킬에서 받아옴)
     /// </summary>
     float attachMoveSpeed;
@@ -220,7 +229,7 @@ public class ReactionObject : RecycleObject
         }
         else
         {
-            rigid.MovePosition(magentDestination.position);         // 정지거리 도달 시 정확한 목적지로 옮기기
+            //rigid.MovePosition(magentDestination.position);         // 정지거리 도달 시 정확한 목적지로 옮기기
         }
     }
 
@@ -235,6 +244,9 @@ public class ReactionObject : RecycleObject
         {
             // 중력 사용 x, 자석 목적지 설정, 이동속도 설정
             rigid.useGravity = false;
+            rigid.drag = Mathf.Infinity;
+            rigid.angularDrag = Mathf.Infinity;
+            rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             magentDestination = destination;
             attachMoveSpeed = moveSpeed;
         }
@@ -249,6 +261,9 @@ public class ReactionObject : RecycleObject
         {
             // 중력 원래대로, 목적지 없애기
             rigid.useGravity = true;
+            rigid.drag = originDrag;
+            rigid.angularDrag = originAngularDrag;
+            rigid.collisionDetectionMode = CollisionDetectionMode.Discrete;
             magentDestination = null;
         }
     }

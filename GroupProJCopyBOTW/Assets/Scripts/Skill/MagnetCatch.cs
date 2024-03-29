@@ -190,7 +190,7 @@ public class MagnetCatch : Skill
                 isMagnetic = (reactionTarget != null) && (reactionTarget.IsMagnetic);
                 if (isMagnetic)
                 {
-                    //hitPoint = hit.collider.bounds.center;
+                    hitPoint = hit.collider.bounds.center;
                     hitPoint = hit.point;
                 }
             }

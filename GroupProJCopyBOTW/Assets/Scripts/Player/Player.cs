@@ -119,18 +119,23 @@ public class Player : MonoBehaviour
         {
             if (selectSkill != value)
             {
-                selectSkill = value;
-                Debug.Log($"스킬 [{selectSkill}]로 설정");
                 switch (selectSkill)
                 {
                     case SkillName.RemoteBomb:
                     case SkillName.RemoteBomb_Cube:
+                    case SkillName.IceMaker:
+                    case SkillName.TimeLock:
                         if (reaction != null && reaction.transform.CompareTag("Skill"))     // 리모컨폭탄류의 스킬을 들고 있는 경우
                         {
-                            CancelSkill();                                                  // 스킬취소 (비활성화)
+                            DropObject();   // 땅에 버리기
                         }
                         break;
+                    case SkillName.MagnetCatch: // 마그넷캐치가 활성화 된 상태면 스킬 변경 불가능
+                        value = selectSkill;   
+                        break;
                 }
+                selectSkill = value;            // 현재 스킬 설정
+                Debug.Log($"스킬 [{selectSkill}]로 설정");
                 onSkillSelect?.Invoke(selectSkill);         // 현재 선택된 스킬을 알림
             }
         }
@@ -188,7 +193,7 @@ public class Player : MonoBehaviour
 
         rightClick += PickUpObjectDetect;       // 우클릭 = 물건 들기
         onThrow += ThrowObject;                 // 던지기
-        onCancel += CancelSkill;                // 취소
+        onCancel += DropObject;                // 취소
 
         onPickUp += () => handRootTracker.OnTracking(handRoot.transform);   // 물건을 들면 손위치추적기 동작
         onSkill += () => handRootTracker.OnTracking(handRoot.transform);    // 스킬 사용시 손위치추적기 동작
@@ -314,7 +319,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 취소 행동용 메서드 (아직 확인중)
     /// </summary>
-    void CancelSkill()
+    void DropObject()
     {
         // 취소키 야숨에서 확인하기
         /*if(IsPickUp && reaction != null)
@@ -323,14 +328,19 @@ public class Player : MonoBehaviour
             reaction.Drop();
             reaction = null;
         }*/
-        if (IsSkillOn)          // 스킬이 사용중이면 모두 취소
+        if (IsSkillOn && reaction != null)          // 스킬이 사용중이면 모두 취소
         {
             IsPickUp = false;
+            reaction.Drop();
             reaction = null;
         }
         
     }
 
+    /// <summary>
+    /// 스킬을 발동하는 메서드
+    /// </summary>
+    /// <param name="_"></param>
     private void OnSkill(InputAction.CallbackContext _)
     {
         if (!IsPickUp)
@@ -347,10 +357,10 @@ public class Player : MonoBehaviour
             //        break;
             //}
             
-            IsPickUp = !IsSkillOn;      // 파악중
+            IsPickUp = !IsSkillOn;      // 스킬이 현재 사용중이 아니면
 
             onSkill?.Invoke();
-            reaction = SkillController.CurrentOnSkill;
+            reaction = SkillController.CurrentOnSkill;  // 손에 드는 오브젝트는 현재 사용중인 스킬
         }
     }
 

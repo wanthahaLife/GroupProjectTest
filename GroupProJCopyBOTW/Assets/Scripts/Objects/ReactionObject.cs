@@ -124,7 +124,7 @@ public class ReactionObject : RecycleObject
     /// <summary>
     /// 현재 상태를 나타내는 enum
     /// </summary>
-    protected enum StateType
+    public enum StateType
     {
         None = 0,   // 아무것도 아님(원래상태)
         PickUp,     // 들려있음
@@ -140,6 +140,7 @@ public class ReactionObject : RecycleObject
 
     //bool isCarried = false;
     //bool isThrow = false;
+    public StateType State => currentState;
 
     /// <summary>
     /// 원래 부모 (들렸을 때 변경된 부모를 되돌리기 위함)

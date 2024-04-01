@@ -28,6 +28,7 @@ public class Skill : ReactionObject
 
     protected Action camOn;
     protected Action camOff;
+    public Action cancelSkill;
 
     protected override void Awake()
     {
@@ -112,5 +113,10 @@ public class Skill : ReactionObject
         isActivate = false;
         ReturnToPool();
 
+    }
+
+    protected override void ReturnAction()
+    {
+        cancelSkill?.Invoke();
     }
 }

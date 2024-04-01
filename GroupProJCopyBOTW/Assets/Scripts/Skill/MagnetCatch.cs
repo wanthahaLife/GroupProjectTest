@@ -76,9 +76,19 @@ public class MagnetCatch : Skill
         isActivate = false;
         isMagnetic = false;
 
-        magnetCamOn = magnetVcam.OnSkillCamera;
-        magnetCamOn += () => magnetVcam.SetLookAtTransform(targetGroup.transform);
-        magnetCamOff = magnetVcam.OffSkillCamera;
+        magnetCamOn = () => {
+            magnetVcam.OnSkillCamera();
+            magnetVcam.SetLookAtTransform(targetGroup.transform);
+            owner.IsInputRotate = false;
+            owner.CameraRoot.IsRotateX = false;
+        };
+       
+        magnetCamOff = () =>
+        {
+            magnetVcam.OffSkillCamera();
+            owner.IsInputRotate = true;
+            owner.CameraRoot.IsRotateX = true;
+        };
 
         targetGroup.m_Targets[1].target = owner.transform;
 
@@ -116,7 +126,7 @@ public class MagnetCatch : Skill
         {
             Vector3 movePos = targetDestination.position + new Vector3(0, mouseDir.y * Time.fixedDeltaTime * verticalSpeed, 0);
             float horizontalDistance = MathF.Abs(owner.transform.position.y - movePos.y);
-            targetDestination.position = (horizontalDistance < maxHorizontalDistance) ? movePos : transform.position;
+            targetDestination.position = (horizontalDistance < maxHorizontalDistance) ? movePos : targetDestination.position;
         }
         else
         {
@@ -135,6 +145,7 @@ public class MagnetCatch : Skill
     }
     protected override void UseSkillAction()
     {
+        // 자석 발동시 좌우 움직임 막기 (실패해도 날아가는동안)
         if (isMagnetic)
         {
             StopAllCoroutines();
@@ -182,6 +193,7 @@ public class MagnetCatch : Skill
 
     IEnumerator TargetCheck()
     {
+        
         while (true) {
         Ray ray = Camera.main.ViewportPointToRay(Center);
             Physics.Raycast(ray, out RaycastHit hit, magnetDistance);

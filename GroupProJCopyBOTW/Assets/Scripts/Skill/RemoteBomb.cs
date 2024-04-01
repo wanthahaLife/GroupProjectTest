@@ -13,7 +13,8 @@ public class RemoteBomb : Skill
 
     protected override void OnSKillAction()
     {
-        if (currentState == StateType.None)
+        Debug.Log(currentState);
+        if (currentState == StateType.Throw)
         {
             Boom();
         }
@@ -34,7 +35,7 @@ public class RemoteBomb : Skill
 
     protected override void CollisionAfterThrow()
     {
-        currentState = StateType.None;
+        currentState = StateType.Throw;
     }
 
 #if UNITY_EDITOR

@@ -369,7 +369,7 @@ public class ReactionObject : RecycleObject
 
     public void PickUp(Transform root)
     {
-        if ((IsSkill || IsThrowable) && currentState == StateType.None)
+        if ((IsSkill || IsThrowable) && currentState != StateType.PickUp)
         {
             transform.parent = root;
             Vector3 destPos = root.position;
@@ -384,7 +384,7 @@ public class ReactionObject : RecycleObject
 
     public void PickUp()
     {
-        if (IsThrowable && currentState == StateType.None)
+        if (IsThrowable && currentState != StateType.PickUp)
         {
             currentState = StateType.PickUp;
             rigid.isKinematic = true;
@@ -405,6 +405,7 @@ public class ReactionObject : RecycleObject
             transform.parent = originParent;
         }
     }
+
 
     protected void ReturnToPool()
     {

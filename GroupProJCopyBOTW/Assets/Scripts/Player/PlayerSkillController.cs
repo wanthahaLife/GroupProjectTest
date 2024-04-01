@@ -42,10 +42,9 @@ public class PlayerSkillController : MonoBehaviour
 
             player.onSkillSelect += ConnectSkill;
 
-            player.onSkill += () => onSKillAction?.Invoke();
             player.onSkill += OnSkill;
             player.rightClick += () => useSkillAction?.Invoke();
-            player.onCancel += CancelSkill;
+            player.onCancel += () => offSkillAction?.Invoke();
 
             //onSKillAction += OnSkill;
 
@@ -73,6 +72,7 @@ public class PlayerSkillController : MonoBehaviour
                     onSKillAction = remoteBomb.OnSkill;
                     useSkillAction = remoteBomb.UseSkill;
                     offSkillAction = remoteBomb.OffSkill;
+                    remoteBomb.cancelSkill = CancelSkill;
                 }
 
                 break;
@@ -83,6 +83,7 @@ public class PlayerSkillController : MonoBehaviour
                     onSKillAction = remoteBombCube.OnSkill;
                     useSkillAction = remoteBombCube.UseSkill;
                     offSkillAction = remoteBombCube.OffSkill;
+                    remoteBombCube.cancelSkill = CancelSkill;
                 }
                 break;
             case SkillName.MagnetCatch:
@@ -92,6 +93,7 @@ public class PlayerSkillController : MonoBehaviour
                     onSKillAction = magnetCatch.OnSkill;
                     useSkillAction = magnetCatch.UseSkill;
                     offSkillAction = magnetCatch.OffSkill;
+                    magnetCatch.cancelSkill = CancelSkill;
                 }
                 break;
             case SkillName.IceMaker:
@@ -99,7 +101,6 @@ public class PlayerSkillController : MonoBehaviour
             case SkillName.TimeLock:
                 break;
         }
-
     }
 
     void OnSkill()
@@ -114,11 +115,6 @@ public class PlayerSkillController : MonoBehaviour
                     remoteBomb = SkillFactory.Instance.GetRemoteBomb(); // 팩토리에서 리모컨폭탄 가져온 뒤 리모컨 폭탄 변수에 설정
                     currentOnSkill = remoteBomb;                        // 현재 사용중인 스킬은 리모컨폭탄
                 }
-                else
-                {
-                    CancelSkill();          // 리모컨폭탄이 소환되어 있으면 터지면서 스킬 종료
-                }
-
                 break;
             case SkillName.RemoteBomb_Cube:
                 if (remoteBombCube == null)
@@ -126,10 +122,6 @@ public class PlayerSkillController : MonoBehaviour
                     //Debug.Log("실행 : 리모컨 폭탄 큐브");
                     remoteBombCube = SkillFactory.Instance.GetRemoteBombCube();
                     currentOnSkill = remoteBombCube;
-                }
-                else
-                {
-                    CancelSkill();
                 }
                 break;
             case SkillName.MagnetCatch:
@@ -148,6 +140,8 @@ public class PlayerSkillController : MonoBehaviour
         
         ConnectSkill(currentSkill);
 
+        onSKillAction?.Invoke();
+
         if (currentOnSkill != null)
         {
             currentOnSkill.PickUp(HandRoot);
@@ -156,12 +150,11 @@ public class PlayerSkillController : MonoBehaviour
             //currentOnSkill.transform.forward = player.transform.forward;
         }
 
-        onSKillAction?.Invoke();
     }
+
 
     void CancelSkill()
     {
-        offSkillAction?.Invoke();
         switch (currentSkill)
         {
             case SkillName.RemoteBomb:
@@ -181,6 +174,7 @@ public class PlayerSkillController : MonoBehaviour
             case SkillName.TimeLock:
                 break;
         }
+
     }
 
 

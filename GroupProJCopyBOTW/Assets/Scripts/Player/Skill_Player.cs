@@ -43,11 +43,11 @@ public class Skill_Player : MonoBehaviour
     /// <summary>
     /// 카메라 회전용 자식 트랜스폼
     /// </summary>
-    Transform cameraRoot;
+    Skill_CameraRootMover cameraRoot;
     /// <summary>
     /// 카메라 회전용 프로퍼티
     /// </summary>
-    public Transform CameraRoot
+    public Skill_CameraRootMover CameraRoot
     {
         get => cameraRoot;
     }
@@ -161,6 +161,14 @@ public class Skill_Player : MonoBehaviour
             }
         }
     }
+
+    bool isInputRotate = true;
+    public bool IsInputRotate
+    {
+        get => isInputRotate;
+        set => isInputRotate = value;
+    }
+
     /// <summary>
     /// 현재 들고있는 오브젝트 (들고있지 않으면 null)
     /// </summary>
@@ -190,7 +198,7 @@ public class Skill_Player : MonoBehaviour
 
         pickUpRoot = transform.GetChild(2);
 
-        cameraRoot = transform.GetComponentInChildren<Skill_CameraRootMover>().transform;
+        cameraRoot = transform.GetComponentInChildren<Skill_CameraRootMover>();
 
         rightClick += PickUpObjectDetect;       // 우클릭 = 물건 들기
         onThrow += ThrowObject;                 // 던지기
@@ -438,7 +446,7 @@ public class Skill_Player : MonoBehaviour
     private void Update()
     {
         transform.Translate(Time.deltaTime * moveSpeed * inputDir);
-        if (inputDir.sqrMagnitude > 0.001f)
+        if (IsInputRotate && inputDir.sqrMagnitude > 0.001f)
         {
             character.rotation = Quaternion.Slerp(character.rotation, Quaternion.LookRotation(inputDir) * transform.rotation, rotateSpeed * Time.deltaTime);
             //character.rotation = Quaternion.LookRotation(inputDir) * transform.rotation;

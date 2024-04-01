@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 /// <summary>
@@ -201,6 +202,7 @@ public class ReactionObject : RecycleObject
     }
     protected void OnCollisionEnter(Collision collision)
     {
+
         if (currentState == StateType.Throw) // 현재 오브젝트가 던져진 상태일 때
         {
             CollisionAfterThrow();
@@ -212,7 +214,7 @@ public class ReactionObject : RecycleObject
         if (IsAttachMagnet)
         {
             // 현재 자석에 붙어있다면
-            rigid.velocity = Vector3.zero;          // 물체에서 부딪친 후 밀리는 힘 제거
+            //rigid.velocity = Vector3.zero;          // 물체에서 부딪친 후 밀리는 힘 제거
             rigid.angularVelocity = Vector3.zero;   // 물체에서 부딪친 후 회전하는 힘 제거
         }
     }
@@ -225,11 +227,15 @@ public class ReactionObject : RecycleObject
         Vector3 dir = magentDestination.position - rigid.position;
         if (dir.sqrMagnitude > 0.001f * attachMoveSpeed)            // 이동속도에 따라 적당한 정지거리 지정(떨림 방지)
         {
-            rigid.MovePosition(rigid.position + Time.fixedDeltaTime * attachMoveSpeed * dir.normalized);    // 이동
+            //rigid.MovePosition(rigid.position + Time.fixedDeltaTime * attachMoveSpeed * dir.normalized);    // 이동
+            // 모서리부분, 끝부분 뚫리는 현상 방지를 위해 velocity 사용
+            rigid.velocity = attachMoveSpeed * dir.normalized;
         }
         else
         {
             //rigid.MovePosition(magentDestination.position);         // 정지거리 도달 시 정확한 목적지로 옮기기
+            // 도착하면 velocity를 없애 떨림 방지 (안하면 지나가고 되돌아오고 반복하면서 떨림)
+            rigid.velocity = Vector3.zero;
         }
     }
 
@@ -244,9 +250,8 @@ public class ReactionObject : RecycleObject
         {
             // 중력 사용 x, 자석 목적지 설정, 이동속도 설정
             rigid.useGravity = false;
-            rigid.drag = Mathf.Infinity;
-            rigid.angularDrag = Mathf.Infinity;
-            rigid.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            //rigid.drag = Mathf.Infinity;
+            //rigid.angularDrag = Mathf.Infinity;
             magentDestination = destination;
             attachMoveSpeed = moveSpeed;
         }
@@ -263,7 +268,6 @@ public class ReactionObject : RecycleObject
             rigid.useGravity = true;
             rigid.drag = originDrag;
             rigid.angularDrag = originAngularDrag;
-            rigid.collisionDetectionMode = CollisionDetectionMode.Discrete;
             magentDestination = null;
         }
     }

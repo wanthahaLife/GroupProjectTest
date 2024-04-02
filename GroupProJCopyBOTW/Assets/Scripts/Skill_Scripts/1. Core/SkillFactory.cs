@@ -8,6 +8,7 @@ public enum SkillType
     RemoteBombPool = 0,
     RemoteBombCubePool,
     MagnetCatchPool,
+    IceMakerPool
 }
 
 public class SkillFactory : Singleton<SkillFactory>
@@ -15,6 +16,7 @@ public class SkillFactory : Singleton<SkillFactory>
     RemoteBombPool remoteBombPool;
     RemoteBombCubePool remoteBombCubePool;
     MagnetCatchPool magnetCatchPool;
+    IceMakerPool iceMakerPool;
 
     protected override void OnInitialize()
     {
@@ -26,6 +28,8 @@ public class SkillFactory : Singleton<SkillFactory>
         if (remoteBombCubePool != null) remoteBombCubePool.Initialize();
         magnetCatchPool = GetComponentInChildren<MagnetCatchPool>();
         if (magnetCatchPool != null) magnetCatchPool.Initialize();
+        iceMakerPool = GetComponentInChildren<IceMakerPool>();
+        if (iceMakerPool != null) iceMakerPool.Initialize();
     }
  
     /// <summary>
@@ -49,6 +53,9 @@ public class SkillFactory : Singleton<SkillFactory>
             case SkillType.MagnetCatchPool:
                 result = magnetCatchPool.GetObject(position, euler).gameObject;
                 break;
+            case SkillType.IceMakerPool:
+                result = iceMakerPool.GetObject(position, euler).gameObject;
+                break;
         }
 
         return result;
@@ -70,5 +77,8 @@ public class SkillFactory : Singleton<SkillFactory>
     {
         return magnetCatchPool.GetObject(position, angle * Vector3.forward);
     }
-
+    public IceMaker GetIceMaker(Vector3? position = null, float angle = 0.0f)
+    {
+        return iceMakerPool.GetObject(position, angle * Vector3.forward);
+    }
 }

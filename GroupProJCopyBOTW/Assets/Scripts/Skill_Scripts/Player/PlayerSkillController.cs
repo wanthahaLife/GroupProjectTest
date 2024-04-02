@@ -24,6 +24,7 @@ public class PlayerSkillController : MonoBehaviour
     RemoteBomb remoteBomb;
     RemoteBombCube remoteBombCube;
     MagnetCatch magnetCatch;
+    IceMaker iceMaker;
 
     private void Awake()
     {
@@ -97,6 +98,14 @@ public class PlayerSkillController : MonoBehaviour
                 }
                 break;
             case SkillName.IceMaker:
+                currentOnSkill = iceMaker;
+                if(iceMaker != null)
+                {
+                    onSKillAction = iceMaker.OnSkill;
+                    useSkillAction = iceMaker.UseSkill;
+                    offSkillAction = iceMaker.OffSkill;
+                    iceMaker.cancelSkill = CancelSkill;
+                }
                 break;
             case SkillName.TimeLock:
                 break;
@@ -133,6 +142,12 @@ public class PlayerSkillController : MonoBehaviour
                 }
                 break;
             case SkillName.IceMaker:
+                if (iceMaker == null)
+                {
+                    //Debug.Log("실행 : 아이스 메이커");
+                    iceMaker = SkillFactory.Instance.GetIceMaker();
+                    currentOnSkill = iceMaker;
+                }
                 break;
             case SkillName.TimeLock:
                 break;
@@ -145,9 +160,6 @@ public class PlayerSkillController : MonoBehaviour
         if (currentOnSkill != null)
         {
             currentOnSkill.PickUp(HandRoot);
-            //currentOnSkill.transform.SetParent(HandRoot);
-            //currentOnSkill.transform.position = HandRoot.position;
-            //currentOnSkill.transform.forward = player.transform.forward;
         }
 
     }
@@ -159,22 +171,20 @@ public class PlayerSkillController : MonoBehaviour
         {
             case SkillName.RemoteBomb:
                 remoteBomb = null;
-                currentOnSkill = null;
                 break;
             case SkillName.RemoteBomb_Cube:
                 remoteBombCube = null;
-                currentOnSkill = null;
                 break;
             case SkillName.MagnetCatch:
                 magnetCatch = null;
-                currentOnSkill = null;
                 break;
             case SkillName.IceMaker:
+                iceMaker = null;
                 break;
             case SkillName.TimeLock:
                 break;
         }
-
+        currentOnSkill = null;
     }
 
 

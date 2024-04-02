@@ -14,6 +14,7 @@ public enum SkillName
 
 public class Skill : ReactionObject
 {
+    [Header("스킬 데이터")]
     public SkillName skillName = SkillName.RemoteBomb;
     public float coolTime = 1.0f;
     public float CoolTime => coolTime;

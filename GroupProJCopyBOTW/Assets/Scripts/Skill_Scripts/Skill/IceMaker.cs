@@ -15,7 +15,9 @@ public class IceMaker : Skill
 
     Vector3 createPosition = Vector3.zero;
 
-    Vector3 waterCheckBox = Vector3.zero;
+    Vector3 iceSize = Vector3.zero;
+
+    Vector3 waterCheckBoxHalfSize = Vector3.zero;
 
     const float WaterCheckBoxHeight = 0.1f;
 
@@ -35,8 +37,10 @@ public class IceMaker : Skill
         
         preview = transform.GetChild(2);
 
-        waterCheckBox = preview.lossyScale * 0.5f;
-        waterCheckBox.y = WaterCheckBoxHeight;
+        iceSize = preview.GetChild(0).lossyScale;
+
+        waterCheckBoxHalfSize = iceSize * 0.5f;
+        waterCheckBoxHalfSize.y = WaterCheckBoxHeight;
     }
     protected override void Start()
     {
@@ -64,29 +68,38 @@ public class IceMaker : Skill
             Ray ray = Camera.main.ViewportPointToRay(Center);
 
             // 해당 위치가 물인지 체크
-            if (Physics.Raycast(ray, out RaycastHit hit, iceMakerDistance, LayerMask.GetMask("Water")))
+            if (Physics.Raycast(ray, out RaycastHit hit, iceMakerDistance))
             {
                 // 물의 범위가 얼음 크기만큼 되는지 체크
-                if (Physics.CheckBox(hit.point, waterCheckBox, Quaternion.identity, LayerMask.GetMask("Water")))
+                Collider[] colliders = Physics.OverlapBox(hit.point, waterCheckBoxHalfSize);
+                foreach (Collider collider in colliders)
                 {
-                    Vector3 point = (hit.point + Vector3.up * preview.lossyScale.y) * 0.5f;
-                    if(!Physics.CheckBox(point, preview.lossyScale * 0.5f, Quaternion.identity, LayerMask.GetMask("Ground")))
+                    if (collider.gameObject.layer == LayerMask.NameToLayer("Water"))
                     {
-                        isPossible = true;
-                        createPosition = point;
+                        Vector3 point = (hit.point + Vector3.up * preview.lossyScale.y * 0.5f);
+                        if (!Physics.CheckBox(point, preview.lossyScale * 0.5f, Quaternion.identity, LayerMask.GetMask("Ground")))
+                        {
+                            isPossible = true;
+                            createPosition = hit.point;
+                            preview.gameObject.SetActive(true);
+                            preview.position = createPosition;
+                        }
+                        else
+                        {
+                            preview.gameObject.SetActive(false);
+                            //Debug.Log("생성 불가");
+                        }
                     }
                     else
                     {
-                        //Debug.Log("생성 불가");
+                        preview.gameObject.SetActive(false);
+                        //Debug.Log("물 범위가 좁음");
                     }
-                }
-                else
-                {
-                    //Debug.Log("물 범위가 좁음");
                 }
             }
             else
             {
+                preview.gameObject.SetActive(false);
                 //Debug.Log("물이 아님");
             }
 
@@ -100,8 +113,6 @@ public class IceMaker : Skill
         if(isPossible)
         {
             StopAllCoroutines();
-            preview.gameObject.SetActive(true);
-            preview.position = createPosition;
         }
     }
 
@@ -118,9 +129,13 @@ public class IceMaker : Skill
         // 레이캐스트 보여주는 기즈모
         if (hit.transform != null)
         {
-            Handles.color = Color.blue;
+            Handles.color = Color.green;
             Vector3 vec = Camera.main.ViewportToWorldPoint(Center);
             Handles.DrawLine(vec, hit.point, 2);
+            if(hit.transform.gameObject.layer == LayerMask.NameToLayer("Water"))
+            {
+                Handles.DrawWireCube(hit.point, waterCheckBoxHalfSize * 2);
+            }
         }
 
     }

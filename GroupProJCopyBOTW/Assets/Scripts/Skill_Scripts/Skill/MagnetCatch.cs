@@ -16,7 +16,7 @@ using UnityEditor;
 public class MagnetCatch : Skill
 {
     [Header("마그넷캐치 데이터")]
-    public float magnetDistance = 5.0f;
+    public float magnetDistance = 50.0f;
     public float targetMoveSpeed = 5.0f;
     public float verticalSpeed = 2.0f;
     public float horizontalDistanceAtOnce = 1.0f;
@@ -39,7 +39,6 @@ public class MagnetCatch : Skill
 
     Vector3 targetOriginRotate;
 
-    readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
 
     Action magnetCamOn;
     Action magnetCamOff;
@@ -67,6 +66,8 @@ public class MagnetCatch : Skill
     protected override void OnEnable()
     {
         base.OnEnable();
+        StopAllCoroutines();
+
         if(magnetVcam == null)
         {
             magnetVcam = GameManager.Instance.Cam.MagnetCam;

@@ -31,6 +31,7 @@ public class Skill : ReactionObject
     protected Action camOff;
     public Action cancelSkill;
 
+    protected readonly Vector3 Center = new Vector3(0.5f, 0.5f, 0.0f);
     protected override void Awake()
     {
         base.Awake();
